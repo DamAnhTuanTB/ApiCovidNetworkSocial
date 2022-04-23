@@ -4,6 +4,7 @@ import { UserModule } from '../user/user.module';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import entities from 'src/typeorm';
+import { SocketGateway } from './app.websocket';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import entities from 'src/typeorm';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SocketGateway],
 })
 export class AppModule {}

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { Module } from '@nestjs/common';
+import { SocketGateway } from '../app/app.websocket';
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UserController],
@@ -11,6 +12,7 @@ import { Module } from '@nestjs/common';
       provide: 'USER_SERVICE',
       useClass: UserService,
     },
+    SocketGateway,
   ],
 })
 export class UserModule {}
