@@ -3,6 +3,7 @@ import { User as UserEntity } from './../../typeorm/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { encodePassword } from 'src/commons/helpers/bcrypt';
 @Injectable()
 export class UserService {
   constructor(
@@ -10,8 +11,13 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
+  findUserByUsername(username: string) {
+    return this.userRepository.findOne({ username });
+  }
+
   createUser(createUserDto: CreateUserDto) {
-    const newUser = this.userRepository.create(createUserDto);
+    const password = encodePassword(createUserDto.password);
+    const newUser = this.userRepository.create({ ...createUserDto, password });
     return this.userRepository.save(newUser);
   }
 }

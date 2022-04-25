@@ -3,9 +3,13 @@ import {
   Controller,
   Inject,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
+  Request,
+  Get,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { CreateUserDto } from './dto/CreateUser';
 import { UserService } from './user.service';
 
@@ -19,5 +23,11 @@ export class UserController {
   @UsePipes(ValidationPipe)
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

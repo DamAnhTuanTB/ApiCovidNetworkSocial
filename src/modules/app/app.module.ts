@@ -1,3 +1,4 @@
+import { AuthModule } from './../auth/auth.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { UserModule } from '../user/user.module';
@@ -7,6 +8,7 @@ import entities from 'src/typeorm';
 
 @Module({
   imports: [
+    AuthModule,
     UserModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -16,7 +18,7 @@ import entities from 'src/typeorm';
       password: '',
       database: 'covid_network_social_db',
       entities,
-      synchronize: true,
+      synchronize: false,
     }),
   ],
   controllers: [AppController],
