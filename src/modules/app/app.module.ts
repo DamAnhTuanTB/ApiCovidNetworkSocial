@@ -18,7 +18,7 @@ import entities from 'src/typeorm';
       password: '',
       database: 'covid_network_social_db',
       entities,
-      synchronize: false,
+      synchronize: true,
     }),
   ],
   controllers: [AppController],
