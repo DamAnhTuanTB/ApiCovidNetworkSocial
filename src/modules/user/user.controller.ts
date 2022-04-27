@@ -9,10 +9,12 @@ import {
   Request,
   Get,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { CreateUserDto } from './dto/CreateUser';
+import { CreateUserDto } from './dto/CreateUser.dto';
 import { UserService } from './user.service';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(
@@ -26,6 +28,10 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiHeader({
+    name: 'Authorization',
+  })
+  @ApiBearerAuth()
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
