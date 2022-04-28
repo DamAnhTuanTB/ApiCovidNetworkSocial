@@ -1,4 +1,4 @@
-import { CreateUserDto } from './dto/CreateUser';
+import { CreateUserDto } from './dto/CreateUser.dto';
 import { User as UserEntity } from './../../typeorm/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,8 +11,8 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  findUserByUsername(username: string) {
-    return this.userRepository.findOne({ username });
+  findUserByEmail(email: string) {
+    return this.userRepository.findOne({ email });
   }
 
   createUser(createUserDto: CreateUserDto) {

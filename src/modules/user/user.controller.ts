@@ -9,11 +9,13 @@ import {
   Request,
   Get,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { CreateUserDto } from './dto/CreateUser';
+import { CreateUserDto } from './dto/CreateUser.dto';
 import { UserService } from './user.service';
 
-@Controller('user')
+@ApiTags('Patient')
+@Controller('patient')
 export class UserController {
   constructor(
     @Inject('USER_SERVICE') private readonly userService: UserService,
@@ -26,8 +28,10 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Get('profile')
   getProfile(@Request() req) {
+    delete req.user.password;
     return req.user;
   }
 }
