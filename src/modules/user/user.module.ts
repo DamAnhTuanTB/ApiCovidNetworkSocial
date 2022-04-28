@@ -1,4 +1,4 @@
-import { User } from './../../typeorm/user.entity';
+import { User } from '../../typeorm/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';

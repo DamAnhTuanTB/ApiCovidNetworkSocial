@@ -1,8 +1,9 @@
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
-const entities = [User];
+import { Post } from './post.entity';
+const entities = [User, Post];
 
-export abstract class BaseEntity {
+export class BaseEntity {
   @PrimaryGeneratedColumn({
     type: 'bigint',
   })
@@ -21,6 +22,6 @@ export abstract class BaseEntity {
   update_at: string;
 }
 
-export { User };
+export { User, Post };
 
 export default entities;

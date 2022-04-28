@@ -1,5 +1,4 @@
-import { Entity, Column } from 'typeorm';
-import { BaseEntity } from '.';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -8,7 +7,23 @@ export enum UserRole {
 }
 
 @Entity('users')
-export class User extends BaseEntity {
+export class User {
+  @PrimaryGeneratedColumn({
+    type: 'bigint',
+  })
+  id: number;
+
+  @Column({
+    type: 'datetime',
+    default: () => 'NOW()',
+  })
+  create_at: string;
+
+  @Column({
+    type: 'datetime',
+    default: () => 'NOW()',
+  })
+  update_at: string;
   @Column({
     nullable: false,
     default: '',

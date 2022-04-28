@@ -1,3 +1,4 @@
+import { PostModule } from './../post/post.module';
 import { AuthModule } from './../auth/auth.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -10,6 +11,7 @@ import entities from 'src/typeorm';
   imports: [
     AuthModule,
     UserModule,
+    PostModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',

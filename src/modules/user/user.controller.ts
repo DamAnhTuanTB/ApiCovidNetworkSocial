@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
   Get,
+  Param,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
@@ -28,6 +29,11 @@ export class UserController {
   getProfile(@User() user: CreateUserDto) {
     delete user.password;
     return user;
+  }
+
+  @Get('profile/:id')
+  getProfileOther(@Param('id') id: number) {
+    return this.userService.getProfileOther(id);
   }
 
   @Put('profile')

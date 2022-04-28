@@ -10,7 +10,7 @@ import {
   OLD_PASSWORD_INCORRECT,
 } from './../../commons/constants/http-messages';
 import { CreateUserDto } from './dto/CreateUser.dto';
-import { User as UserEntity } from './../../typeorm/user.entity';
+import { User as UserEntity } from '../../typeorm/user.entity';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,6 +22,12 @@ export class UserService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
+
+  async getProfileOther(id: number) {
+    const userDb = await this.userRepository.findOne({ id });
+    delete userDb.password;
+    return userDb;
+  }
 
   async findUserByEmail(email: string) {
     return await this.userRepository.findOne({ email });
