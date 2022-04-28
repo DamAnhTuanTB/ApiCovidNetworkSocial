@@ -33,6 +33,18 @@ export class UserService {
     return await this.userRepository.findOne({ email });
   }
 
+  async findUserByEmailOrTelephone(emailOrTelephone) {
+    const findUserByEmail = await this.userRepository.findOne({
+      email: emailOrTelephone,
+    });
+    if (!findUserByEmail) {
+      return await this.userRepository.findOne({
+        telephone: emailOrTelephone,
+      });
+    }
+    return findUserByEmail;
+  }
+
   async createUser(createUserDto: CreateUserDto) {
     const user = await this.findUserByEmail(createUserDto.email);
     if (user) {
