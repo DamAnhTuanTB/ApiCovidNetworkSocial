@@ -21,12 +21,6 @@ export class UserController {
     @Inject('USER_SERVICE') private readonly userService: UserService,
   ) {}
 
-  @Post('create')
-  @UsePipes(ValidationPipe)
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
-  }
-
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Get('profile')
