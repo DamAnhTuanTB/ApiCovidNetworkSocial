@@ -1,5 +1,6 @@
 import { UserService } from 'src/modules/user/user.service';
 import { CreatePostDto } from './dto/CreatePost.dto';
+import { UpdatePostDto } from './dto/UpdatePost.dto';
 import {
   Body,
   Controller,
@@ -9,6 +10,7 @@ import {
   UseGuards,
   Get,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
@@ -27,5 +29,19 @@ export class PostController {
   @Post('create')
   createPost(@User('id') id: number, @Body() createPost: CreatePostDto) {
     return this.postService.createPost(id, createPost);
+  }
+
+  @Delete('delete/:id')
+  deletePost(@User('id') userId: number, @Param('id') id: number) {
+    return this.postService.deletePost(id, userId);
+  }
+
+  @Put('update-post/:idPost')
+  async updatePost(
+    @User('id') userId: number,
+    @Param('idPost') idPost: number,
+    @Body() updatePost: UpdatePostDto,
+  ) {
+    return this.postService.updatePost(userId, idPost, updatePost);
   }
 }
