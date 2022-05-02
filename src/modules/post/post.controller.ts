@@ -49,7 +49,7 @@ export class PostController {
   }
 
   //Get danh sách bài viết của người dùng hiện tại
-  @Post('get-list-post-user-login')
+  @Get('get-list-post-user-login')
   getListPostOfUser(@User('id') userId: number) {
     return this.postService.getListPostOfUser(userId);
   }

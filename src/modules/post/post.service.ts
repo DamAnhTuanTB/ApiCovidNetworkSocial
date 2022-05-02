@@ -13,6 +13,7 @@ import {
   SuccessUpdatePost,
 } from 'src/commons/constants/success-messages';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
+import { StatusPost, UpdateStatusPostDto } from './dto/UpdateStatusPost.dto';
 import {
   FailDeletePost,
   FailUpdatePost,
@@ -79,6 +80,11 @@ export class PostService {
       };
     }
     await this.postRepository.update({ id }, updatePost);
+    //Change status of post
+    const updateStatusPost = new UpdateStatusPostDto();
+    updateStatusPost.status = StatusPost.PENDING;
+    await this.postRepository.update({ id }, updateStatusPost);
+
     return {
       statusCode: HttpStatus.OK,
       message: SuccessUpdatePost,
