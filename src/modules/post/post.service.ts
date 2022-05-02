@@ -89,7 +89,7 @@ export class PostService {
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
-        'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.status, posts.title',
+        'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
       )
       .addSelect('IFNULL(COUNT(like_posts.id), 0)', 'totalLike')
       .addSelect('IFNULL(COUNT(comment_posts.id), 0)', 'totalComment')
