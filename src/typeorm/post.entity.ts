@@ -50,6 +50,6 @@ export class Post {
   })
   title: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;
 }

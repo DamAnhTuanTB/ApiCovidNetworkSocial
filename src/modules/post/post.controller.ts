@@ -26,16 +26,19 @@ export class PostController {
     @Inject('POST_SERVICE') private readonly postService: PostService,
   ) {}
 
+  //Người dùng hiện tại tạo bài viết
   @Post('create')
   createPost(@User('id') id: number, @Body() createPost: CreatePostDto) {
     return this.postService.createPost(id, createPost);
   }
 
+  //Xóa bài viết của người dùng hiện tại
   @Delete('delete/:id')
   deletePost(@User('id') userId: number, @Param('id') id: number) {
     return this.postService.deletePost(id, userId);
   }
 
+  //Cập nhật bài viết của người dùng hiện tại
   @Put('update-post/:idPost')
   async updatePost(
     @User('id') userId: number,
@@ -43,5 +46,11 @@ export class PostController {
     @Body() updatePost: UpdatePostDto,
   ) {
     return this.postService.updatePost(userId, idPost, updatePost);
+  }
+
+  //Get danh sách bài viết của người dùng hiện tại
+  @Post('get-list-post-user-login')
+  getListPostOfUser(@User('id') userId: number) {
+    return this.postService.getListPostOfUser(userId);
   }
 }

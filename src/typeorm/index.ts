@@ -1,7 +1,10 @@
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Post } from './post.entity';
-const entities = [User, Post];
+import { LikePost } from './like_posts.entity';
+import { CommentPost } from './comment_posts.entity';
+import { SavePost } from './save_posts.entity';
+const entities = [User, Post, LikePost, CommentPost, SavePost];
 
 export class BaseEntity {
   @PrimaryGeneratedColumn({
@@ -22,6 +25,6 @@ export class BaseEntity {
   update_at: string;
 }
 
-export { User, Post };
+export { User, Post, LikePost, CommentPost, SavePost };
 
 export default entities;
