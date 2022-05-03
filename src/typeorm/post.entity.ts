@@ -28,12 +28,14 @@ export class Post {
   @Column({
     nullable: false,
     default: '',
+    length: 1000,
   })
   content_texts: string;
 
   @Column({
     nullable: false,
     default: '',
+    length: 1000,
   })
   content_images: string;
 
