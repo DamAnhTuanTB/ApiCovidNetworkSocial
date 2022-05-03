@@ -16,9 +16,12 @@ import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { StatusPost, UpdateStatusPostDto } from './dto/UpdateStatusPost.dto';
 import {
   FailDeletePost,
+  FailTypeLimitOrPage,
+  FailTypePost,
   FailUpdatePost,
 } from 'src/commons/constants/error-messages';
 import { CommentPost, LikePost, SavePost, User } from 'src/typeorm';
+import { type } from 'os';
 
 @Injectable()
 export class PostService {
@@ -91,7 +94,12 @@ export class PostService {
     };
   }
 
-  async getListPostsOfUserLogin(userId: number): Promise<Post[]> {
+  async getListPostsOfUserLogin(
+    userId: number,
+    typeStatus: string,
+    limit: number,
+    page: number,
+  ): Promise<Post[]> {
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
@@ -110,7 +118,65 @@ export class PostService {
           userId +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
-      .where('posts.userId = :userId', {
+      .where('posts.userId = :userId and posts.status = :typeStatus', {
+        userId: userId,
+        typeStatus: typeStatus,
+      })
+      .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
+      .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
+      .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
+      .leftJoin(User, 'users', 'posts.userId = users.id')
+      .groupBy('posts.id')
+      .orderBy('posts.create_at', 'DESC')
+      .getRawMany();
+  }
+
+  async getListPostsOfUserLoginPendingOrCancel(
+    userId: number,
+    typeStatus: string,
+    limit: number,
+    page: number,
+  ): Promise<Post[]> {
+    return await this.postRepository
+      .createQueryBuilder('posts')
+      .select(
+        'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
+      )
+      .where('posts.userId = :userId and posts.status = :typeStatus', {
+        userId: userId,
+        typeStatus: typeStatus,
+      })
+      .leftJoin(User, 'users', 'posts.userId = users.id')
+      .groupBy('posts.id')
+      .orderBy('posts.create_at', 'DESC')
+      .getRawMany();
+  }
+
+  async getListPostsOfUserLoginSave(
+    userId: number,
+    typeStatus: string,
+    limit: number,
+    page: number,
+  ): Promise<Post[]> {
+    return await this.postRepository
+      .createQueryBuilder('posts')
+      .select(
+        'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
+      )
+      .addSelect('IFNULL(COUNT(like_posts.id), 0)', 'totalLike')
+      .addSelect('IFNULL(COUNT(comment_posts.id), 0)', 'totalComment')
+      .addSelect('IFNULL(COUNT(save_posts.id), 0)', 'totalSave')
+      .addSelect(
+        'IF(SUM(IF(like_posts.userId = ' +
+          userId +
+          ', 1, 0)) >= 1, true, false) as isLike',
+      )
+      .addSelect(
+        'IF(SUM(IF(save_posts.userId = ' +
+          userId +
+          ', 1, 0)) >= 1, true, false) as isSave',
+      )
+      .where("posts.userId = :userId and posts.status = 'success'", {
         userId: userId,
       })
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
@@ -118,15 +184,64 @@ export class PostService {
       .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
       .leftJoin(User, 'users', 'posts.userId = users.id')
       .groupBy('posts.id')
+      .having('isSave = 1')
+      .orderBy('posts.create_at', 'DESC')
       .getRawMany();
   }
 
-  async getListPostOfUser(userId: number) {
-    const listPost = await this.getListPostsOfUserLogin(userId);
+  returnListPostByUserLoginResponse(
+    listPost: Array<Post>,
+    limit: number,
+    page: number,
+  ) {
+    const total = listPost.length;
+    const listPostPaging = listPost.slice(limit * page - limit, limit * page);
     return {
       statusCode: HttpStatus.OK,
       message: SuccessGetListPostUser,
-      data: listPost,
+      total: total,
+      data: listPostPaging,
     };
+  }
+
+  async getListPostOfUser(
+    userId: number,
+    type: string,
+    limit: number,
+    page: number,
+  ) {
+    const listTypeToGet = ['success', 'pending', 'cancel', 'save'];
+    if (!listTypeToGet.includes(type)) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: FailTypePost,
+      };
+    }
+
+    if (type == 'pending' || type == 'cancel') {
+      const listPost = await this.getListPostsOfUserLoginPendingOrCancel(
+        userId,
+        type,
+        limit,
+        page,
+      );
+      return this.returnListPostByUserLoginResponse(listPost, limit, page);
+    } else if (type == 'save') {
+      const listPost = await this.getListPostsOfUserLoginSave(
+        userId,
+        type,
+        limit,
+        page,
+      );
+      return this.returnListPostByUserLoginResponse(listPost, limit, page);
+    } else {
+      const listPost = await this.getListPostsOfUserLogin(
+        userId,
+        type,
+        limit,
+        page,
+      );
+      return this.returnListPostByUserLoginResponse(listPost, limit, page);
+    }
   }
 }

@@ -11,6 +11,7 @@ import {
   Get,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
@@ -50,7 +51,12 @@ export class PostController {
 
   //Get danh sách bài viết của người dùng hiện tại
   @Get('get-list-post-user-login')
-  getListPostOfUser(@User('id') userId: number) {
-    return this.postService.getListPostOfUser(userId);
+  getListPostOfUser(
+    @User('id') userId: number,
+    @Query('type') type: string,
+    @Query('limit') limit: number,
+    @Query('page') page: number,
+  ) {
+    return this.postService.getListPostOfUser(userId, type, limit, page);
   }
 }
