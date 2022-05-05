@@ -94,32 +94,31 @@ export class PostService {
     };
   }
 
-  async getListPostsOfUserLogin(
-    userId: number,
+  async getListPostsSuccessOfUser(
+    idGetListPost: number,
+    idGetLikeSave: number,
     typeStatus: string,
-    limit: number,
-    page: number,
   ): Promise<Post[]> {
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
         'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
       )
-      .addSelect('IFNULL(COUNT(like_posts.id), 0)', 'totalLike')
-      .addSelect('IFNULL(COUNT(comment_posts.id), 0)', 'totalComment')
-      .addSelect('IFNULL(COUNT(save_posts.id), 0)', 'totalSave')
+      .addSelect('IFNULL(COUNT(distinct like_posts.id), 0)', 'totalLike')
+      .addSelect('IFNULL(COUNT(distinct comment_posts.id), 0)', 'totalComment')
+      .addSelect('IFNULL(COUNT(distinct save_posts.id), 0)', 'totalSave')
       .addSelect(
         'IF(SUM(IF(like_posts.userId = ' +
-          userId +
+          idGetLikeSave +
           ', 1, 0)) >= 1, true, false) as isLike',
       )
       .addSelect(
         'IF(SUM(IF(save_posts.userId = ' +
-          userId +
+          idGetLikeSave +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
       .where('posts.userId = :userId and posts.status = :typeStatus', {
-        userId: userId,
+        userId: idGetListPost,
         typeStatus: typeStatus,
       })
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
@@ -134,8 +133,6 @@ export class PostService {
   async getListPostsOfUserLoginPendingOrCancel(
     userId: number,
     typeStatus: string,
-    limit: number,
-    page: number,
   ): Promise<Post[]> {
     return await this.postRepository
       .createQueryBuilder('posts')
@@ -152,20 +149,15 @@ export class PostService {
       .getRawMany();
   }
 
-  async getListPostsOfUserLoginSave(
-    userId: number,
-    typeStatus: string,
-    limit: number,
-    page: number,
-  ): Promise<Post[]> {
+  async getListPostsOfUserLoginSave(userId: number): Promise<Post[]> {
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
         'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
       )
-      .addSelect('IFNULL(COUNT(like_posts.id), 0)', 'totalLike')
-      .addSelect('IFNULL(COUNT(comment_posts.id), 0)', 'totalComment')
-      .addSelect('IFNULL(COUNT(save_posts.id), 0)', 'totalSave')
+      .addSelect('IFNULL(COUNT(distinct like_posts.id), 0)', 'totalLike')
+      .addSelect('IFNULL(COUNT(distinct comment_posts.id), 0)', 'totalComment')
+      .addSelect('IFNULL(COUNT(distinct save_posts.id), 0)', 'totalSave')
       .addSelect(
         'IF(SUM(IF(like_posts.userId = ' +
           userId +
@@ -205,7 +197,8 @@ export class PostService {
   }
 
   async getListPostOfUser(
-    userId: number,
+    idGetListPost: number,
+    idGetLikeSave: number,
     type: string,
     limit: number,
     page: number,
@@ -220,28 +213,68 @@ export class PostService {
 
     if (type == 'pending' || type == 'cancel') {
       const listPost = await this.getListPostsOfUserLoginPendingOrCancel(
-        userId,
+        idGetListPost,
         type,
-        limit,
-        page,
       );
       return this.returnListPostByUserLoginResponse(listPost, limit, page);
     } else if (type == 'save') {
-      const listPost = await this.getListPostsOfUserLoginSave(
-        userId,
-        type,
-        limit,
-        page,
-      );
+      const listPost = await this.getListPostsOfUserLoginSave(idGetListPost);
       return this.returnListPostByUserLoginResponse(listPost, limit, page);
     } else {
-      const listPost = await this.getListPostsOfUserLogin(
-        userId,
+      const listPost = await this.getListPostsSuccessOfUser(
+        idGetListPost,
+        idGetLikeSave,
         type,
-        limit,
-        page,
       );
       return this.returnListPostByUserLoginResponse(listPost, limit, page);
     }
+  }
+
+  async getALlPostsByFilter(
+    userId: number,
+    freeText: string,
+    sortBy: string,
+  ): Promise<Post[]> {
+    return await this.postRepository
+      .createQueryBuilder('posts')
+      .select(
+        'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
+      )
+      .addSelect('IFNULL(COUNT(distinct like_posts.id), 0)', 'totalLike')
+      .addSelect('IFNULL(COUNT(distinct comment_posts.id), 0)', 'totalComment')
+      .addSelect('IFNULL(COUNT(distinct save_posts.id), 0)', 'totalSave')
+      .addSelect(
+        'IF(SUM(IF(like_posts.userId = ' +
+          userId +
+          ', 1, 0)) >= 1, true, false) as isLike',
+      )
+      .addSelect(
+        'IF(SUM(IF(save_posts.userId = ' +
+          userId +
+          ', 1, 0)) >= 1, true, false) as isSave',
+      )
+      .where(
+        "posts.content_texts like '%" +
+          freeText +
+          "%' and posts.status = 'success'",
+      )
+      .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
+      .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
+      .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
+      .leftJoin(User, 'users', 'posts.userId = users.id')
+      .groupBy('posts.id')
+      .orderBy('posts.' + sortBy, 'DESC')
+      .getRawMany();
+  }
+
+  async getALlPosts(
+    idLogin: number,
+    freeText: string,
+    sortBy: string,
+    limit: number,
+    page: number,
+  ) {
+    const listPost = await this.getALlPostsByFilter(idLogin, freeText, sortBy);
+    return this.returnListPostByUserLoginResponse(listPost, limit, page);
   }
 }

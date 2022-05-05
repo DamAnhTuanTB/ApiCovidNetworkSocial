@@ -50,13 +50,46 @@ export class PostController {
   }
 
   //Get danh sách bài viết của người dùng hiện tại
-  @Get('get-list-post-user-login')
+  @Get('get-list-post-of-user')
   getListPostOfUser(
-    @User('id') userId: number,
-    @Query('type') type: string,
-    @Query('limit') limit: number,
-    @Query('page') page: number,
+    @User('id') idLogin: number,
+    @Query('idUser') idUser: number,
+    @Query('type') type = 'success',
+    @Query('limit') limit = 10,
+    @Query('page') page = 1,
   ) {
-    return this.postService.getListPostOfUser(userId, type, limit, page);
+    if (typeof idUser == 'undefined' || idUser == null) {
+      const idGetListPost = idLogin;
+      const idGetLikeSave = idLogin;
+      return this.postService.getListPostOfUser(
+        idGetListPost,
+        idGetLikeSave,
+        type,
+        limit,
+        page,
+      );
+    } else {
+      const idGetListPost = idUser;
+      const idGetLikeSave = idLogin;
+      return this.postService.getListPostOfUser(
+        idGetListPost,
+        idGetLikeSave,
+        type,
+        limit,
+        page,
+      );
+    }
+  }
+
+  //Get danh sách bài viết của những user khác
+  @Get('get-all-posts')
+  getALlPosts(
+    @User('id') idLogin: number,
+    @Query('freeText') freeText = '',
+    @Query('sortBy') sortBy = 'create_at',
+    @Query('limit') limit = 10,
+    @Query('page') page = 1,
+  ) {
+    return this.postService.getALlPosts(idLogin, freeText, sortBy, limit, page);
   }
 }
