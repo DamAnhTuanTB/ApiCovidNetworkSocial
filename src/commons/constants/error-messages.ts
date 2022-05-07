@@ -5,3 +5,7 @@ export const FailDeletePost = 'Post does not exist, post deletion failed.';
 export const FailTypePost = 'Type of post does not exist, list post failed.';
 export const FailTypeLimitOrPage =
   'Limit and page are not numeric data types. Try again please.';
+export const FailGetPostDetails = 'Post do not exists. please try again.';
+export const FailGetPostDetailsBecauseOfNotSuccess =
+  'Posts are in pending or canceled status.';
+export const FailGetComment = 'Comment do not exists!.';

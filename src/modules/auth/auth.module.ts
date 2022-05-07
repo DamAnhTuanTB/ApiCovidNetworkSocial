@@ -9,13 +9,27 @@ import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategy/local.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User, Post } from 'src/typeorm';
+import {
+  User,
+  Post,
+  CommentPost,
+  LikePost,
+  SavePost,
+  LikeComment,
+} from 'src/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Post]),
+    TypeOrmModule.forFeature([
+      User,
+      Post,
+      CommentPost,
+      LikePost,
+      SavePost,
+      LikeComment,
+    ]),
     UserModule,
     PassportModule,
     PostModule,

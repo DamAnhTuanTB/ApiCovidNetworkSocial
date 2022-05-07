@@ -17,7 +17,7 @@ import entities from 'src/typeorm';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '',
+      password: '04112000',
       database: 'covid_network_social_db',
       entities,
       synchronize: true,

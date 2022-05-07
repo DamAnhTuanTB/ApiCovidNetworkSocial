@@ -7,4 +7,7 @@ export const SuccessCreatePost =
   'You have successfully created your post. Your post has been sent to the admin for approval.';
 export const SuccessDeletePost = 'Your post has been successfully deleted.';
 export const SuccessUpdatePost = 'You have successfully updated your post.';
-export const SuccessGetListPostUser = 'Get list post successful.';
+export const SuccessGetListPaging = 'Get list successful.';
+export const SuccessGetPostDetails = 'Get post detail successful.';
+export const SuccessCreateCommentPost = 'Create comment successful.';
+export const SuccessLikeOrUnlikePost = 'Like or unlike post successful.';
