@@ -282,16 +282,18 @@ export class PostService {
           ', 1, 0)) >= 1, true, false) as isSave',
       )
       .where(
-        "posts.content_texts like '%" +
+        "(`users`.`nick_name` like '%" +
           freeText +
-          "%' and posts.status = 'success'",
+          "%' or posts.title like '%" +
+          freeText +
+          "%') and posts.status = 'success'",
       )
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
       .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
       .leftJoin(User, 'users', 'posts.userId = users.id')
       .groupBy('posts.id')
-      .orderBy('posts.' + sortBy, 'DESC')
+      .orderBy(sortBy, 'DESC')
       .getRawMany();
   }
 
@@ -423,16 +425,17 @@ export class PostService {
     const post = await this.postRepository.findOne({
       id: createLikeOrUnlikePostDto.postId,
     });
-    if (createLikeOrUnlikePostDto.isLike) {
+    const rawLikePost = await this.likePostRepository.findOne({
+      user: user,
+      post: post,
+    });
+
+    if (!rawLikePost && createLikeOrUnlikePostDto.isLike) {
       await this.likePostRepository.save({
         user,
         post,
       });
-    } else {
-      const rawLikePost = this.likePostRepository.findOne({
-        user: user,
-        post: post,
-      });
+    } else if (rawLikePost && createLikeOrUnlikePostDto.isLike == false) {
       await this.likePostRepository.delete({ id: (await rawLikePost).id });
     }
 
@@ -450,16 +453,17 @@ export class PostService {
     const post = await this.postRepository.findOne({
       id: createSaveOrUnsavePostDto.postId,
     });
-    if (createSaveOrUnsavePostDto.isSave) {
+    const rawLikePost = await this.savePostRepository.findOne({
+      user: user,
+      post: post,
+    });
+
+    if (!rawLikePost && createSaveOrUnsavePostDto.isSave) {
       await this.savePostRepository.save({
         user,
         post,
       });
-    } else {
-      const rawLikePost = this.savePostRepository.findOne({
-        user: user,
-        post: post,
-      });
+    } else if (rawLikePost && createSaveOrUnsavePostDto.isSave == false) {
       await this.savePostRepository.delete({ id: (await rawLikePost).id });
     }
 
@@ -483,16 +487,18 @@ export class PostService {
         message: FailGetComment,
       };
     }
-    if (createLikeOrUnlikeCommentDto.isLike) {
+
+    const rawLikeComment = await this.likeCommentRepository.findOne({
+      user: user,
+      comment: comment,
+    });
+
+    if (!rawLikeComment && createLikeOrUnlikeCommentDto.isLike) {
       await this.likeCommentRepository.save({
         user,
         comment,
       });
-    } else {
-      const rawLikeComment = this.likeCommentRepository.findOne({
-        user: user,
-        comment: comment,
-      });
+    } else if (rawLikeComment && createLikeOrUnlikeCommentDto.isLike == false) {
       await this.likeCommentRepository.delete({
         id: (await rawLikeComment).id,
       });
