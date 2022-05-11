@@ -85,7 +85,7 @@ export class PostController {
     }
   }
 
-  //Get danh sách bài viết của những user khác
+  //Get danh sách bài viết của user login và những user khác
   @Get('get-all-posts')
   getALlPosts(
     @User('id') idLogin: number,

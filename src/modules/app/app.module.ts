@@ -6,12 +6,14 @@ import { UserModule } from '../user/user.module';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import entities from 'src/typeorm';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
     AuthModule,
     UserModule,
     PostModule,
+    AdminModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
