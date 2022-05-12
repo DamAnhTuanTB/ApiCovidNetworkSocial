@@ -14,7 +14,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { AdminService, StatusPost } from './admin.service';
+import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
+import { CreateLikeOrUnlikeCommentDto } from './dto/CreateLikeOrUnlikeComment.dto';
+import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
 import { CreatePostDto } from './dto/CreatePost.dto';
+import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 
 @ApiTags('Admin')
@@ -96,11 +100,74 @@ export class AdminController {
     return this.adminService.deletePost(id, userId);
   }
 
+  //Cập nhật trạng thái bài viết
   @Put('update-status-post/:idPost')
   async updateStatusPost(
     @Param('idPost') idPost: number,
     @Query('status') status: StatusPost,
   ) {
     return this.adminService.updateStatusPost(idPost, status);
+  }
+
+  //Get chi tiết bài viết
+  @Get('get-post-detail/:idPost')
+  getPostDetail(@User('id') idLogin: number, @Param('idPost') idPost: number) {
+    return this.adminService.getPostDetail(idLogin, idPost);
+  }
+
+  //Get danh sách comment trong bài viết
+  @Get('get-all-comment-post')
+  getAllCommentOfPost(
+    @User('id') idLogin: number,
+    @Query('idPost') idPost: number,
+    @Query('limit') limit = 10,
+    @Query('page') page = 1,
+  ) {
+    return this.adminService.getAllCommentOfPost(idLogin, idPost, limit, page);
+  }
+
+  //Tạo comment cho bài viết
+  @Post('create-comment')
+  createCommentPost(
+    @User('id') idLogin: number,
+    @Body() createCommentPost: CreateCommentPostDto,
+  ) {
+    return this.adminService.createCommentPost(idLogin, createCommentPost);
+  }
+
+  //Like or unlike post
+  @Post('like-or-unlike-post')
+  likeOrUnlikePost(
+    @User('id') idLogin: number,
+    @Body() createLikeOrUnlikePostDto: CreateLikeOrUnlikePostDto,
+  ) {
+    return this.adminService.likeOrUnlikePost(
+      idLogin,
+      createLikeOrUnlikePostDto,
+    );
+  }
+
+  //Like or unlike post
+  @Post('save-or-unsave-post')
+  saveOrUnsavePost(
+    @User('id') idLogin: number,
+    @Body() createSaveOrUnsavePostDto: CreateSaveOrUnsavePostDto,
+  ) {
+    return this.adminService.saveOrUnsavePost(
+      idLogin,
+      createSaveOrUnsavePostDto,
+    );
+  }
+
+  //Like or unlike post
+  @Post('like-or-unlike-comment')
+  likeOrUnlikeComment(
+    @User('id') idLogin: number,
+    @Body() createLikeOrUnlikeCommentDto: CreateLikeOrUnlikeCommentDto,
+  ) {
+    return this.adminService.likeOrUnlikeComment(
+      idLogin,
+      createLikeOrUnlikeCommentDto,
+    );
   }
 }
