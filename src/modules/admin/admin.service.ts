@@ -78,7 +78,7 @@ export class AdminService {
     };
   }
 
-  async getAllPostsByFilter(
+  async getAllPostsByFilterWithoutAdminPosts(
     idLogin: number,
     createAt: string,
     title: string,
@@ -105,15 +105,61 @@ export class AdminService {
           ', 1, 0)) >= 1, true, false) as isSave',
       )
       .where(
-        "(`users`.`nick_name` like '%" +
+        "`users`.`nick_name` like '%" +
           nickName +
           "%' and posts.title like '%" +
           title +
-          "%') and posts.status = '" +
+          "%' and posts.status = '" +
           typePost +
           "' and DATE(posts.create_at) = '" +
           createAt +
-          "'",
+          "' and posts.userId != " +
+          idLogin,
+      )
+      .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
+      .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
+      .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
+      .leftJoin(User, 'users', 'posts.userId = users.id')
+      .groupBy('posts.id')
+      .orderBy('create_at', typeSort == 'ASC' ? 'ASC' : 'DESC')
+      .getRawMany();
+  }
+
+  async getAllPostsByFilterAdminPosts(
+    idLogin: number,
+    createAt: string,
+    title: string,
+    nickName: string,
+    typePost: string,
+    typeSort: string,
+  ): Promise<Post[]> {
+    return await this.postRepository
+      .createQueryBuilder('posts')
+      .select(
+        'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
+      )
+      .addSelect('IFNULL(COUNT(distinct like_posts.id), 0)', 'totalLike')
+      .addSelect('IFNULL(COUNT(distinct comment_posts.id), 0)', 'totalComment')
+      .addSelect('IFNULL(COUNT(distinct save_posts.id), 0)', 'totalSave')
+      .addSelect(
+        'IF(SUM(IF(like_posts.userId = ' +
+          idLogin +
+          ', 1, 0)) >= 1, true, false) as isLike',
+      )
+      .addSelect(
+        'IF(SUM(IF(save_posts.userId = ' +
+          idLogin +
+          ', 1, 0)) >= 1, true, false) as isSave',
+      )
+      .where(
+        "`users`.`nick_name` like '%" +
+          nickName +
+          "%' and posts.title like '%" +
+          title +
+          "' and DATE(posts.create_at) = '" +
+          createAt +
+          "' and posts.userId = " +
+          idLogin,
       )
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
@@ -134,23 +180,43 @@ export class AdminService {
     limit: number,
     page: number,
   ) {
-    const listPost = await this.getAllPostsByFilter(
-      idLogin,
-      createAt,
-      title,
-      nickName,
-      typePost,
-      typeSort,
-    );
-    if (typeof limit == 'undefined') {
-      return {
-        statusCode: HttpStatus.OK,
-        message: SuccessGetListPaging,
-        total: listPost.length,
-        data: listPost,
-      };
+    if (typePost == 'success_admin') {
+      const listPost = await this.getAllPostsByFilterAdminPosts(
+        idLogin,
+        createAt,
+        title,
+        nickName,
+        typePost,
+        typeSort,
+      );
+      if (typeof limit == 'undefined') {
+        return {
+          statusCode: HttpStatus.OK,
+          message: SuccessGetListPaging,
+          total: listPost.length,
+          data: listPost,
+        };
+      }
+      return this.returnListPostByPagingResponse(listPost, limit, page);
+    } else {
+      const listPost = await this.getAllPostsByFilterWithoutAdminPosts(
+        idLogin,
+        createAt,
+        title,
+        nickName,
+        typePost,
+        typeSort,
+      );
+      if (typeof limit == 'undefined') {
+        return {
+          statusCode: HttpStatus.OK,
+          message: SuccessGetListPaging,
+          total: listPost.length,
+          data: listPost,
+        };
+      }
+      return this.returnListPostByPagingResponse(listPost, limit, page);
     }
-    return this.returnListPostByPagingResponse(listPost, limit, page);
   }
 
   async getAllPostsByFilterAndUserId(
