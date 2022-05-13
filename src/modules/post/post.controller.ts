@@ -59,7 +59,7 @@ export class PostController {
     @User('id') idLogin: number,
     @Query('idUser') idUser: number,
     @Query('type') type = 'success',
-    @Query('limit') limit = 10,
+    @Query('limit') limit?: number,
     @Query('page') page = 1,
   ) {
     if (typeof idUser == 'undefined' || idUser == null) {
@@ -91,7 +91,7 @@ export class PostController {
     @User('id') idLogin: number,
     @Query('freeText') freeText = '',
     @Query('sortBy') sortBy = 'create_at',
-    @Query('limit') limit = 10,
+    @Query('limit') limit?: number,
     @Query('page') page = 1,
   ) {
     return this.postService.getALlPosts(idLogin, freeText, sortBy, limit, page);
@@ -108,7 +108,7 @@ export class PostController {
   getAllCommentOfPost(
     @User('id') idLogin: number,
     @Query('idPost') idPost: number,
-    @Query('limit') limit = 10,
+    @Query('limit') limit?: number,
     @Query('page') page = 1,
   ) {
     return this.postService.getAllCommentOfPost(idLogin, idPost, limit, page);

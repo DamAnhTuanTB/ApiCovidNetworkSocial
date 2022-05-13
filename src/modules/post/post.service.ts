@@ -244,9 +244,25 @@ export class PostService {
         idGetListPost,
         type,
       );
+      if (typeof limit == 'undefined') {
+        return {
+          statusCode: HttpStatus.OK,
+          message: SuccessGetListPaging,
+          total: listPost.length,
+          data: listPost,
+        };
+      }
       return this.returnListPostByPagingResponse(listPost, limit, page);
     } else if (type == 'save') {
       const listPost = await this.getListPostsOfUserLoginSave(idGetListPost);
+      if (typeof limit == 'undefined') {
+        return {
+          statusCode: HttpStatus.OK,
+          message: SuccessGetListPaging,
+          total: listPost.length,
+          data: listPost,
+        };
+      }
       return this.returnListPostByPagingResponse(listPost, limit, page);
     } else {
       const listPost = await this.getListPostsSuccessOfUser(
@@ -254,6 +270,14 @@ export class PostService {
         idGetLikeSave,
         type,
       );
+      if (typeof limit == 'undefined') {
+        return {
+          statusCode: HttpStatus.OK,
+          message: SuccessGetListPaging,
+          total: listPost.length,
+          data: listPost,
+        };
+      }
       return this.returnListPostByPagingResponse(listPost, limit, page);
     }
   }
@@ -305,6 +329,14 @@ export class PostService {
     page: number,
   ) {
     const listPost = await this.getALlPostsByFilter(idLogin, freeText, sortBy);
+    if (typeof limit == 'undefined') {
+      return {
+        statusCode: HttpStatus.OK,
+        message: SuccessGetListPaging,
+        total: listPost.length,
+        data: listPost,
+      };
+    }
     return this.returnListPostByPagingResponse(listPost, limit, page);
   }
 
@@ -368,7 +400,7 @@ export class PostService {
     limit: number,
     page: number,
   ) {
-    const listCommentPost = this.commentPostRepository
+    const listCommentPost = await this.commentPostRepository
       .createQueryBuilder('comment_posts')
       .select(
         'comment_posts.id, u.id as commentator_id, u.nick_name as commentator_nick_name, u.avatar as commentator_avatar, comment_posts.content_texts, comment_posts.content_images, comment_posts.create_at',
@@ -391,6 +423,14 @@ export class PostService {
       .groupBy('comment_posts.id')
       .orderBy('comment_posts.create_at', 'DESC')
       .getRawMany();
+    if (typeof limit == 'undefined') {
+      return {
+        statusCode: HttpStatus.OK,
+        message: SuccessGetListPaging,
+        total: listCommentPost.length,
+        data: listCommentPost,
+      };
+    }
     return this.returnListPostByPagingResponse(
       await listCommentPost,
       limit,

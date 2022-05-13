@@ -39,7 +39,7 @@ export class AdminController {
     @Query('nick_name') nickName = '',
     @Query('typePost') typePost = 'success',
     @Query('typeSort') typeSort = 'desc',
-    @Query('limit') limit = 10,
+    @Query('limit') limit?: number,
     @Query('page') page = 1,
   ) {
     return this.adminService.getAllPosts(
@@ -63,7 +63,7 @@ export class AdminController {
     @Query('title') title = '',
     @Query('typePost') typePost = 'success',
     @Query('typeSort') typeSort = 'desc',
-    @Query('limit') limit = 10,
+    @Query('limit') limit?: number,
     @Query('page') page = 1,
   ) {
     return this.adminService.getAllPostsByUserId(
@@ -120,7 +120,7 @@ export class AdminController {
   getAllCommentOfPost(
     @User('id') idLogin: number,
     @Query('idPost') idPost: number,
-    @Query('limit') limit = 10,
+    @Query('limit') limit?: number,
     @Query('page') page = 1,
   ) {
     return this.adminService.getAllCommentOfPost(idLogin, idPost, limit, page);
