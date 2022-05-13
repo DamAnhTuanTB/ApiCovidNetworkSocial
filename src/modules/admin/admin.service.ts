@@ -251,6 +251,28 @@ export class AdminService {
     typePost: string,
     typeSort: string,
   ): Promise<Post[]> {
+    let condition = '';
+    if (typeof createAt == 'undefined') {
+      condition =
+        'posts.userId =' +
+        idUser +
+        " and posts.title like '%" +
+        title +
+        "%' and posts.status = '" +
+        typePost +
+        "'";
+    } else {
+      condition =
+        'posts.userId =' +
+        idUser +
+        " and posts.title like '%" +
+        title +
+        "%' and posts.status = '" +
+        typePost +
+        "' and DATE(posts.create_at) = '" +
+        createAt +
+        "'";
+    }
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
@@ -269,17 +291,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
-      .where(
-        'posts.userId =' +
-          idUser +
-          " and posts.title like '%" +
-          title +
-          "%' and posts.status = '" +
-          typePost +
-          "' and DATE(posts.create_at) = '" +
-          createAt +
-          "'",
-      )
+      .where(condition)
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
       .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')

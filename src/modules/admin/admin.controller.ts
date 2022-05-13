@@ -59,7 +59,7 @@ export class AdminController {
   getAllPostsByUserId(
     @User('id') idLogin: number,
     @Query('idUser') idUser: number,
-    @Query('create_at') createAt = '2022-05-11',
+    @Query('create_at') createAt?: string,
     @Query('title') title = '',
     @Query('typePost') typePost = 'success',
     @Query('typeSort') typeSort = 'desc',
