@@ -34,7 +34,7 @@ export class AdminController {
   @Get('get-all-posts')
   getAllPosts(
     @User('id') idLogin: number,
-    @Query('create_at') createAt = '2022-05-11',
+    @Query('create_at') createAt?: string,
     @Query('title') title = '',
     @Query('nick_name') nickName = '',
     @Query('typePost') typePost = 'success',

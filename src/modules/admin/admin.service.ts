@@ -86,6 +86,30 @@ export class AdminService {
     typePost: string,
     typeSort: string,
   ): Promise<Post[]> {
+    let condition = '';
+    if (typeof createAt == 'undefined') {
+      condition =
+        "`users`.`nick_name` like '%" +
+        nickName +
+        "%' and posts.title like '%" +
+        title +
+        "%' and posts.status = '" +
+        typePost +
+        "' and posts.userId != " +
+        idLogin;
+    } else {
+      condition =
+        "`users`.`nick_name` like '%" +
+        nickName +
+        "%' and posts.title like '%" +
+        title +
+        "%' and posts.status = '" +
+        typePost +
+        "' and DATE(posts.create_at) = '" +
+        createAt +
+        "' and posts.userId != " +
+        idLogin;
+    }
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
@@ -104,18 +128,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
-      .where(
-        "`users`.`nick_name` like '%" +
-          nickName +
-          "%' and posts.title like '%" +
-          title +
-          "%' and posts.status = '" +
-          typePost +
-          "' and DATE(posts.create_at) = '" +
-          createAt +
-          "' and posts.userId != " +
-          idLogin,
-      )
+      .where(condition)
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
       .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
@@ -133,6 +146,26 @@ export class AdminService {
     typePost: string,
     typeSort: string,
   ): Promise<Post[]> {
+    let condition = '';
+    if (typeof createAt == 'undefined') {
+      condition =
+        "`users`.`nick_name` like '%" +
+        nickName +
+        "%' and posts.title like '%" +
+        title +
+        "' and posts.userId = " +
+        idLogin;
+    } else {
+      condition =
+        "`users`.`nick_name` like '%" +
+        nickName +
+        "%' and posts.title like '%" +
+        title +
+        "' and DATE(posts.create_at) = '" +
+        createAt +
+        "' and posts.userId = " +
+        idLogin;
+    }
     return await this.postRepository
       .createQueryBuilder('posts')
       .select(
@@ -151,16 +184,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
-      .where(
-        "`users`.`nick_name` like '%" +
-          nickName +
-          "%' and posts.title like '%" +
-          title +
-          "' and DATE(posts.create_at) = '" +
-          createAt +
-          "' and posts.userId = " +
-          idLogin,
-      )
+      .where(condition)
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
       .leftJoin(SavePost, 'save_posts', 'posts.id = save_posts.postId')
