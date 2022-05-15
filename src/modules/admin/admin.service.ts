@@ -346,21 +346,8 @@ export class AdminService {
     };
   }
 
-  async findByIdAndUserId(
-    idPost: number,
-    userId: number,
-  ): Promise<Post | undefined> {
-    return await this.postRepository
-      .createQueryBuilder('posts')
-      .where('posts.id = :idPost and posts.userId = :userId', {
-        idPost: idPost,
-        userId: userId,
-      })
-      .getOne();
-  }
-
   async updatePost(userId: number, id: number, updatePost: UpdatePostDto) {
-    const postUpdate = await this.findByIdAndUserId(id, userId);
+    const postUpdate = await this.postRepository.findOne({ id: id });
     if (!postUpdate) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
@@ -376,7 +363,7 @@ export class AdminService {
   }
 
   async deletePost(id: number, userId: number) {
-    const postDelete = await this.findByIdAndUserId(id, userId);
+    const postDelete = await this.postRepository.findOne({ id: id });
     if (!postDelete) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
