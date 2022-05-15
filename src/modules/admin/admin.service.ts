@@ -36,6 +36,7 @@ import {
 import { CreatePostDto } from './dto/CreatePost.dto';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import {
+  FailDeleteComment,
   FailDeletePost,
   FailGetComment,
   FailGetPostDetails,
@@ -604,6 +605,23 @@ export class AdminService {
     return {
       statusCode: HttpStatus.OK,
       message: SuccessLikeOrUnlikePost,
+    };
+  }
+
+  async deleteComment(id: number, userId: number) {
+    const commentDelete = await this.commentPostRepository.findOne({ id: id });
+    if (!commentDelete) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: FailDeleteComment,
+      };
+    }
+    await this.commentPostRepository.delete({
+      id,
+    });
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessDeletePost,
     };
   }
 }

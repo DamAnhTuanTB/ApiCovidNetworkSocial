@@ -170,4 +170,13 @@ export class AdminController {
       createLikeOrUnlikeCommentDto,
     );
   }
+
+  //Xóa comment của admin
+  @Delete('post/delete-comment/:commentId')
+  deleteComment(
+    @User('id') userId: number,
+    @Param('commentId') commentId: number,
+  ) {
+    return this.adminService.deleteComment(commentId, userId);
+  }
 }
