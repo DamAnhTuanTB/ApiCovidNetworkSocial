@@ -37,6 +37,7 @@ import { CreatePostDto } from './dto/CreatePost.dto';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import {
   FailDeleteComment,
+  FailDeletePatient,
   FailDeletePost,
   FailGetComment,
   FailGetPostDetails,
@@ -618,6 +619,61 @@ export class AdminService {
     }
     await this.commentPostRepository.delete({
       id,
+    });
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessDeletePost,
+    };
+  }
+
+  async getAllPatients(limit, page) {
+    const listPatients = await this.userRepository
+      .createQueryBuilder('users')
+      .select(
+        'id, nick_name, email, first_name, last_name, date_of_birth, avatar, telephone',
+      )
+      .where("role = 'patient'")
+      .orderBy('create_at', 'DESC')
+      .getRawMany();
+    if (typeof limit == 'undefined') {
+      return {
+        statusCode: HttpStatus.OK,
+        message: SuccessGetListPaging,
+        total: listPatients.length,
+        data: listPatients,
+      };
+    }
+    return this.returnListPostByPagingResponse(listPatients, limit, page);
+  }
+
+  async getImageByPatientId(idUser) {
+    const listPatients = await this.userRepository
+      .createQueryBuilder('users')
+      .select(
+        "Group_CONCAT(distinct posts.content_images separator ';') AS posts_images,  Group_CONCAT(distinct comment_posts.content_images separator ';') AS comment_images",
+      )
+      .leftJoin(Post, 'posts', 'users.id = posts.userId')
+      .leftJoin(CommentPost, 'comment_posts', 'users.id = comment_posts.userId')
+      .where('users.id = ' + idUser)
+      .getRawMany();
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessGetListPaging,
+      data: listPatients,
+    };
+  }
+
+  async deletePatient(idUser: number) {
+    const patientDelete = await this.userRepository.findOne({ id: idUser });
+    if (!patientDelete) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: FailDeletePatient,
+      };
+    }
+    await this.userRepository.delete({
+      id: idUser,
     });
     return {
       statusCode: HttpStatus.OK,

@@ -62,7 +62,7 @@ export class User {
   role: UserRole;
 
   @Column({
-    type: 'date',
+    type: 'datetime',
     nullable: true,
   })
   date_of_birth: string;

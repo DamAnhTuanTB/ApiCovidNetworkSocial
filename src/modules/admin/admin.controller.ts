@@ -171,12 +171,31 @@ export class AdminController {
     );
   }
 
-  //Xóa comment của admin
+  //admin xóa comment
   @Delete('post/delete-comment/:commentId')
   deleteComment(
     @User('id') userId: number,
     @Param('commentId') commentId: number,
   ) {
     return this.adminService.deleteComment(commentId, userId);
+  }
+
+  //Quản lý bệnh nhân
+  //Get danh sách bệnh nhân
+  @Get('patient/get-all-patients')
+  getAllPatients(@Query('limit') limit?: number, @Query('page') page = 1) {
+    return this.adminService.getAllPatients(limit, page);
+  }
+
+  //Get list ảnh của từng bệnh nhân
+  @Get('patient/get-all-image-of-patient/:idUser')
+  getImageByPatientId(@Param('idUser') idUser: number) {
+    return this.adminService.getImageByPatientId(idUser);
+  }
+
+  //Admin delete patient
+  @Delete('patient/delete-patient/:idUser')
+  deletePatient(@Param('idUser') idUser: number) {
+    return this.adminService.deletePatient(idUser);
   }
 }
