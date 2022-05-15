@@ -145,6 +145,7 @@ export class PostService {
           idGetLikeSave +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where('posts.userId = :userId and posts.status = :typeStatus', {
         userId: idGetListPost,
         typeStatus: typeStatus,
@@ -167,6 +168,7 @@ export class PostService {
       .select(
         'posts.id, `users`.`id` as author_id, `users`.`nick_name`as author_nick_name, `users`.`avatar`as author_avatar, posts.create_at, posts.update_at, posts.content_texts, posts.content_images, posts.status, posts.title',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where('posts.userId = :userId and posts.status = :typeStatus', {
         userId: userId,
         typeStatus: typeStatus,
@@ -196,6 +198,7 @@ export class PostService {
           userId +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where("posts.userId = :userId and posts.status = 'success'", {
         userId: userId,
       })
@@ -305,6 +308,7 @@ export class PostService {
           userId +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where(
         "(`users`.`nick_name` like '%" +
           freeText +
@@ -359,6 +363,7 @@ export class PostService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where("posts.id = :idPost and posts.status = 'success'", {
         idPost: idPost,
       })
@@ -411,6 +416,7 @@ export class PostService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isLike',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where('comment_posts.postId = :idPost', {
         idPost: idPost,
       })

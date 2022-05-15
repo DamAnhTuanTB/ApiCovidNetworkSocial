@@ -128,6 +128,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where(condition)
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
@@ -184,6 +185,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where(condition)
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
@@ -291,6 +293,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where(condition)
       .leftJoin(LikePost, 'like_posts', 'posts.id = like_posts.postId')
       .leftJoin(CommentPost, 'comment_posts', 'posts.id = comment_posts.postId')
@@ -424,6 +427,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isSave',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where("posts.id = :idPost and posts.status = 'success'", {
         idPost: idPost,
       })
@@ -476,6 +480,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isLike',
       )
+      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
       .where('comment_posts.postId = :idPost', {
         idPost: idPost,
       })
