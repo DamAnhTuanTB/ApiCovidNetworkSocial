@@ -469,7 +469,7 @@ export class AdminService {
           idLogin +
           ', 1, 0)) >= 1, true, false) as isLike',
       )
-      .addSelect("IF(users.role = 'admin', true, false) as isAdmin")
+      .addSelect("IF(u.role = 'admin', true, false) as isAdmin")
       .where('comment_posts.postId = :idPost', {
         idPost: idPost,
       })
