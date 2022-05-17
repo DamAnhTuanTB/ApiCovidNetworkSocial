@@ -13,7 +13,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { AdminService, StatusPost } from './admin.service';
+import { PostManagementService, StatusPost } from './postManagement.service';
 import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
 import { CreateLikeOrUnlikeCommentDto } from './dto/CreateLikeOrUnlikeComment.dto';
 import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
@@ -21,13 +21,14 @@ import { CreatePostDto } from './dto/CreatePost.dto';
 import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 
-@ApiTags('Admin')
+@ApiTags('Post Management')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @Controller('admin')
-export class AdminController {
+export class PostManagementController {
   constructor(
-    @Inject('ADMIN_SERVICE') private readonly adminService: AdminService,
+    @Inject('PostManagement_SERVICE')
+    private readonly adminService: PostManagementService,
   ) {}
 
   //Get danh sách bài viết (của patient và admin)
@@ -178,24 +179,5 @@ export class AdminController {
     @Param('commentId') commentId: number,
   ) {
     return this.adminService.deleteComment(commentId, userId);
-  }
-
-  //Quản lý bệnh nhân
-  //Get danh sách bệnh nhân
-  @Get('patient/get-all-patients')
-  getAllPatients(@Query('limit') limit?: number, @Query('page') page = 1) {
-    return this.adminService.getAllPatients(limit, page);
-  }
-
-  //Get list ảnh của từng bệnh nhân
-  @Get('patient/get-all-image-of-patient/:idUser')
-  getImageByPatientId(@Param('idUser') idUser: number) {
-    return this.adminService.getImageByPatientId(idUser);
-  }
-
-  //Admin delete patient
-  @Delete('patient/delete-patient/:idUser')
-  deletePatient(@Param('idUser') idUser: number) {
-    return this.adminService.deletePatient(idUser);
   }
 }

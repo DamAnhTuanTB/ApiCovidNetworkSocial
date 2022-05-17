@@ -1,11 +1,11 @@
-import { UserModule } from './../user/user.module';
+import { UserModule } from '../user/user.module';
 import { UserService } from 'src/modules/user/user.service';
 import { Post } from '../../typeorm/post.entity';
 import { User } from '../../typeorm/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AdminController } from './admin.controller';
+import { PostManagementController } from './postManagement.controller';
 import { Module } from '@nestjs/common';
-import { AdminService } from './admin.service';
+import { PostManagementService } from './postManagement.service';
 import { CommentPost, LikeComment, LikePost, SavePost } from 'src/typeorm';
 @Module({
   imports: [
@@ -18,12 +18,12 @@ import { CommentPost, LikeComment, LikePost, SavePost } from 'src/typeorm';
       LikeComment,
     ]),
   ],
-  controllers: [AdminController],
+  controllers: [PostManagementController],
   providers: [
     {
-      provide: 'ADMIN_SERVICE',
-      useClass: AdminService,
+      provide: 'PostManagement_SERVICE',
+      useClass: PostManagementService,
     },
   ],
 })
-export class AdminModule {}
+export class PostManagementModule {}

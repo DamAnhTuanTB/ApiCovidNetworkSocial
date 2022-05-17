@@ -5,7 +5,18 @@ import { LikePost } from './like_posts.entity';
 import { CommentPost } from './comment_posts.entity';
 import { SavePost } from './save_posts.entity';
 import { LikeComment } from './like_comments.entity';
-const entities = [User, Post, LikePost, CommentPost, SavePost, LikeComment];
+import { ChatSession } from './chat_sessions.entity';
+import { Message } from './messages.entity';
+const entities = [
+  User,
+  Post,
+  LikePost,
+  CommentPost,
+  SavePost,
+  LikeComment,
+  ChatSession,
+  Message,
+];
 
 export class BaseEntity {
   @PrimaryGeneratedColumn({
@@ -26,6 +37,15 @@ export class BaseEntity {
   update_at: string;
 }
 
-export { User, Post, LikePost, CommentPost, SavePost, LikeComment };
+export {
+  User,
+  Post,
+  LikePost,
+  CommentPost,
+  SavePost,
+  LikeComment,
+  ChatSession,
+  Message,
+};
 
 export default entities;

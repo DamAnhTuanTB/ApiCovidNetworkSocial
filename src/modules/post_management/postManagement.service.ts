@@ -49,7 +49,7 @@ import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
 import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
 import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
 @Injectable()
-export class AdminService {
+export class PostManagementService {
   constructor(
     @InjectRepository(PostEntity)
     private readonly postRepository: Repository<PostEntity>,
