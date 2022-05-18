@@ -128,4 +128,10 @@ export class PatientManagementService {
       message: SuccessDeletePost,
     };
   }
+
+  async getPatientById(id: number) {
+    const userDb = await this.userRepository.findOne({ id });
+    delete userDb.password;
+    return userDb;
+  }
 }

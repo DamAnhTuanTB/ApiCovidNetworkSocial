@@ -65,4 +65,9 @@ export class ExpertManagementController {
   ) {
     return this.adminService.updatePassword(idExpert, updatePassword);
   }
+
+  @Get('expert/expert-detail/:idExpert')
+  getExpertById(@Param('idExpert') idExpert: number) {
+    return this.adminService.getExpertById(idExpert);
+  }
 }

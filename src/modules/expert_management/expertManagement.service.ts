@@ -166,4 +166,10 @@ export class ExpertManagementService {
       message: SuccessUpdatePassword,
     };
   }
+
+  async getExpertById(id: number) {
+    const userDb = await this.userRepository.findOne({ id });
+    delete userDb.password;
+    return userDb;
+  }
 }

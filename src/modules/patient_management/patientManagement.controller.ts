@@ -45,4 +45,9 @@ export class PatientManagementController {
   deletePatient(@Param('idUser') idUser: number) {
     return this.adminService.deletePatient(idUser);
   }
+
+  @Get('patient/patient-detail/:idPatient')
+  getPatientById(@Param('idPatient') idPatient: number) {
+    return this.adminService.getPatientById(idPatient);
+  }
 }
