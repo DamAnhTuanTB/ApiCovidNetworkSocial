@@ -6,6 +6,7 @@ export const SuccessUpdatePassword =
 export const SuccessCreatePost =
   'You have successfully created your post. Your post has been sent to the admin for approval.';
 export const SuccessDeletePost = 'Your post has been successfully deleted.';
+export const SuccessDeleteExpert = 'Expert has been successfully deleted.';
 export const SuccessUpdatePost = 'You have successfully updated your post.';
 export const SuccessGetListPaging = 'Get list successful.';
 export const SuccessGetPostDetails = 'Get post detail successful.';

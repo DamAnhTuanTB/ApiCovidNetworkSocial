@@ -6,7 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExpertManagementController } from './expertManagement.controller';
 import { Module } from '@nestjs/common';
 import { ExpertManagementService } from './expertManagement.service';
-import { CommentPost, LikeComment, LikePost, SavePost } from 'src/typeorm';
+import {
+  ChatSession,
+  CommentPost,
+  LikeComment,
+  LikePost,
+  SavePost,
+} from 'src/typeorm';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -16,6 +22,7 @@ import { CommentPost, LikeComment, LikePost, SavePost } from 'src/typeorm';
       LikePost,
       SavePost,
       LikeComment,
+      ChatSession,
     ]),
   ],
   controllers: [ExpertManagementController],

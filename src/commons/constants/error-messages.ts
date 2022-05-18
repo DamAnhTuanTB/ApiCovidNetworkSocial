@@ -4,6 +4,8 @@ export const FailUpdatePost = 'Post does not exist, post update failed.';
 export const FailDeletePost = 'Post does not exist, post deletion failed.';
 export const FailDeletePatient =
   'Patient does not exist, patient deletion failed.';
+export const FailDeleteExpert =
+  'Expert does not exist, expert deletion failed.';
 export const FailDeleteComment =
   'Comment does not exist, comment deletion failed.';
 export const FailTypePost = 'Type of post does not exist, list post failed.';

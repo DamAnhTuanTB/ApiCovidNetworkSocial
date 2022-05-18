@@ -4,7 +4,7 @@ export enum StatusPost {
   CANCEL = 'cancel',
 }
 import { Post, Post as PostEntity } from '../../typeorm/post.entity';
-import { User, User as UserEntity } from '../../typeorm/user.entity';
+import { User, User as UserEntity, UserRole } from '../../typeorm/user.entity';
 import {
   CommentPost,
   CommentPost as CommentPostEntity,
@@ -17,6 +17,7 @@ import {
   LikeComment,
   LikeComment as LikeCommentEntity,
 } from '../../typeorm/like_comments.entity';
+import { ChatSession as ChatSessionEntity } from '../../typeorm/chat_sessions.entity';
 import {
   SavePost,
   SavePost as SavePostEntity,
@@ -31,10 +32,14 @@ import {
   SuccessGetListPaging,
   SuccessGetPostDetails,
   SuccessLikeOrUnlikePost,
+  SuccessRegister,
+  SuccessUpdatePassword,
   SuccessUpdatePost,
+  SuccessUpdateProfile,
 } from 'src/commons/constants/success-messages';
 import {
   FailDeleteComment,
+  FailDeleteExpert,
   FailDeletePatient,
   FailDeletePost,
   FailGetComment,
@@ -43,6 +48,11 @@ import {
   FailUpdatePost,
 } from 'src/commons/constants/error-messages';
 import { ChatSession, Message } from 'src/typeorm';
+import { CreateExpertDto } from './dto/CreateExpertDto.dto';
+import { EMAIL_EXISTS } from 'src/commons/constants/http-messages';
+import { encodePassword } from 'src/commons/helpers/bcrypt';
+import { UpdateExpertDto } from './dto/UpdateExpert.dto';
+import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 @Injectable()
 export class ExpertManagementService {
   constructor(
@@ -58,6 +68,8 @@ export class ExpertManagementService {
     private readonly savePostRepository: Repository<SavePostEntity>,
     @InjectRepository(LikeCommentEntity)
     private readonly likeCommentRepository: Repository<LikeCommentEntity>,
+    @InjectRepository(ChatSessionEntity)
+    private readonly chatSessionRepository: Repository<ChatSessionEntity>,
   ) {}
 
   returnListPostByPagingResponse(
@@ -76,10 +88,10 @@ export class ExpertManagementService {
   }
 
   async getAllExperts(limit, page) {
-    const listPatients = await this.userRepository
+    const listPatients = await this.chatSessionRepository
       .createQueryBuilder('chat_sessions')
       .select(
-        'distinct chat_sessions.id as csId, avg(chat_sessions.evaluate) as avgRate, count(u.id) as countRate, u.id as id, u.nick_name, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.telephone',
+        'u.id as id, u.nick_name, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.telephone, avg(chat_sessions.evaluate) as avgRate, count(distinct `chat_sessions`.`id`) as countRate',
       )
       .innerJoin(Message, 'm', 'chat_sessions.id = m.chatSessionId')
       .innerJoin(User, 'u', 'm.userId = u.id')
@@ -98,30 +110,39 @@ export class ExpertManagementService {
     return this.returnListPostByPagingResponse(listPatients, limit, page);
   }
 
-  async getImageByPatientId(idUser) {
-    const listPatients = await this.userRepository
-      .createQueryBuilder('users')
-      .select(
-        "Group_CONCAT(distinct posts.content_images separator ';') AS posts_images,  Group_CONCAT(distinct comment_posts.content_images separator ';') AS comment_images",
-      )
-      .leftJoin(Post, 'posts', 'users.id = posts.userId')
-      .leftJoin(CommentPost, 'comment_posts', 'users.id = comment_posts.userId')
-      .where('users.id = ' + idUser)
-      .getRawMany();
+  async findUserByEmail(email: string) {
+    return await this.userRepository.findOne({ email });
+  }
 
+  async createExpert(createExpert: CreateExpertDto) {
+    createExpert.role = UserRole.EXPERT;
+    const user = await this.findUserByEmail(createExpert.email);
+    if (user) {
+      throw new HttpException(EMAIL_EXISTS, HttpStatus.BAD_REQUEST);
+    }
+    const password = encodePassword(createExpert.password);
+
+    await this.userRepository.save({ ...createExpert, password });
     return {
-      statusCode: HttpStatus.OK,
-      message: SuccessGetListPaging,
-      data: listPatients,
+      statusCode: HttpStatus.CREATED,
+      message: SuccessRegister,
     };
   }
 
-  async deletePatient(idUser: number) {
+  async updateExpert(idExpert: number, updateExpert: UpdateExpertDto) {
+    await this.userRepository.update({ id: idExpert }, updateExpert);
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessUpdateProfile,
+    };
+  }
+
+  async deleteExpert(idUser: number) {
     const patientDelete = await this.userRepository.findOne({ id: idUser });
     if (!patientDelete) {
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        message: FailDeletePatient,
+        message: FailDeleteExpert,
       };
     }
     await this.userRepository.delete({
@@ -130,6 +151,19 @@ export class ExpertManagementService {
     return {
       statusCode: HttpStatus.OK,
       message: SuccessDeletePost,
+    };
+  }
+
+  async updatePassword(idExpert: number, updatePassword: UpdatePasswordDto) {
+    await this.userRepository.update(
+      {
+        id: idExpert,
+      },
+      { password: encodePassword(updatePassword.new_password) },
+    );
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: SuccessUpdatePassword,
     };
   }
 }
