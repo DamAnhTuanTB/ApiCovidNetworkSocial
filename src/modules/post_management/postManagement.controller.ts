@@ -104,10 +104,11 @@ export class PostManagementController {
   //Cập nhật trạng thái bài viết
   @Put('post/update-status-post/:idPost')
   async updateStatusPost(
+    @User('id') idLogin: number,
     @Param('idPost') idPost: number,
     @Query('status') status: StatusPost,
   ) {
-    return this.adminService.updateStatusPost(idPost, status);
+    return this.adminService.updateStatusPost(idPost, status, idLogin);
   }
 
   //Get chi tiết bài viết

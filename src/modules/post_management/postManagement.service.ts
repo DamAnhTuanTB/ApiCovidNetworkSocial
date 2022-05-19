@@ -388,7 +388,7 @@ export class PostManagementService {
     };
   }
 
-  async updateStatusPost(idPost: number, status: StatusPost) {
+  async updateStatusPost(idPost: number, status: StatusPost, idLogin: number) {
     const postUpdate = await this.postRepository.findOne({ id: idPost });
     if (!postUpdate) {
       return {
@@ -397,7 +397,12 @@ export class PostManagementService {
       };
     }
     await this.postRepository.update({ id: idPost }, { status: status });
-
+    if (status == StatusPost.CANCEL) {
+      const user = await this.userRepository.findOne({ id: idLogin });
+      //Tạo thông báo
+      this.createNotification('Admin đã bình luận', user, postUpdate);
+    } else if (status == StatusPost.SUCCESS) {
+    }
     return {
       statusCode: HttpStatus.OK,
       message: SuccessUpdatePost,
