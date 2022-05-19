@@ -400,8 +400,11 @@ export class PostManagementService {
     if (status == StatusPost.CANCEL) {
       const user = await this.userRepository.findOne({ id: idLogin });
       //Tạo thông báo
-      this.createNotification('Admin đã bình luận', user, postUpdate);
+      this.createNotification('Admin đã hủy bài viết', user, postUpdate);
     } else if (status == StatusPost.SUCCESS) {
+      const user = await this.userRepository.findOne({ id: idLogin });
+      //Tạo thông báo
+      this.createNotification('Admin đã phê duyệt bài viết', user, postUpdate);
     }
     return {
       statusCode: HttpStatus.OK,
