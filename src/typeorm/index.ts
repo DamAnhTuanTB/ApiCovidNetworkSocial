@@ -7,6 +7,7 @@ import { SavePost } from './save_posts.entity';
 import { LikeComment } from './like_comments.entity';
 import { ChatSession } from './chat_sessions.entity';
 import { Message } from './messages.entity';
+import { Notification } from './notification.entity';
 const entities = [
   User,
   Post,
@@ -16,6 +17,7 @@ const entities = [
   LikeComment,
   ChatSession,
   Message,
+  Notification,
 ];
 
 export class BaseEntity {
@@ -46,6 +48,7 @@ export {
   LikeComment,
   ChatSession,
   Message,
+  Notification,
 };
 
 export default entities;
