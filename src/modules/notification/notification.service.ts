@@ -81,13 +81,19 @@ export class NotificationService {
     };
   }
 
-  async getNotifications(limit, page) {
+  async getNotifications(limit, page, idLogin: number) {
     const listPatients = await this.notificationRepository
       .createQueryBuilder('notifications')
       .select(
         'notifications.id, notifications.create_at, notifications.content_texts, notifications.userId, notifications.postId, notifications.senderId AS sender_id, users.avatar AS sender_avatar, users.nick_name AS sender_nick_name',
       )
       .leftJoin(User, 'users', 'notifications.senderId = users.id')
+      .where(
+        'notifications.senderId != ' +
+          idLogin +
+          ' and notifications.userId = ' +
+          idLogin,
+      )
       .orderBy('create_at', 'DESC')
       .getRawMany();
     if (typeof limit == 'undefined') {

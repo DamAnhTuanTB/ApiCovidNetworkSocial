@@ -483,7 +483,7 @@ export class PostService {
       post,
     });
     //Tạo thông báo
-    this.createNotification('Đã bình luận', user, post);
+    this.createNotification('đã bình luận', user, post);
     return {
       statusCode: HttpStatus.CREATED,
       message: SuccessCreateCommentPost,
@@ -509,7 +509,7 @@ export class PostService {
         post,
       });
       //Tạo thông báo
-      this.createNotification('Đã thích', user, post);
+      this.createNotification('đã thích', user, post);
     } else if (rawLikePost && createLikeOrUnlikePostDto.isLike == false) {
       await this.likePostRepository.delete({ id: (await rawLikePost).id });
     }
@@ -539,7 +539,7 @@ export class PostService {
         post,
       });
       //Tạo thông báo
-      this.createNotification('Đã lưu', user, post);
+      this.createNotification('đã lưu', user, post);
     } else if (rawLikePost && createSaveOrUnsavePostDto.isSave == false) {
       await this.savePostRepository.delete({ id: (await rawLikePost).id });
     }

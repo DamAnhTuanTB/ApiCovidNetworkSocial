@@ -11,6 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/commons/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { NotificationService, StatusPost } from './notification.service';
 
@@ -26,7 +27,11 @@ export class NotificationController {
 
   //Get danh sách thông báo
   @Get('/get-all-notifications')
-  getNotifications(@Query('limit') limit?: number, @Query('page') page = 1) {
-    return this.notificationService.getNotifications(limit, page);
+  getNotifications(
+    @User('id') idLogin: number,
+    @Query('limit') limit?: number,
+    @Query('page') page = 1,
+  ) {
+    return this.notificationService.getNotifications(limit, page, idLogin);
   }
 }
