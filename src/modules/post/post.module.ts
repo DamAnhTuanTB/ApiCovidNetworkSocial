@@ -6,7 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostController } from './post.controller';
 import { Module } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CommentPost, LikeComment, LikePost, SavePost } from 'src/typeorm';
+import {
+  CommentPost,
+  LikeComment,
+  LikePost,
+  SavePost,
+  Notification,
+} from 'src/typeorm';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -16,6 +22,7 @@ import { CommentPost, LikeComment, LikePost, SavePost } from 'src/typeorm';
       LikePost,
       SavePost,
       LikeComment,
+      Notification,
     ]),
   ],
   controllers: [PostController],

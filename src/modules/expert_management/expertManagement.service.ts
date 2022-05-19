@@ -88,16 +88,20 @@ export class ExpertManagementService {
   }
 
   async getAllExperts(limit, page) {
-    const listPatients = await this.chatSessionRepository
-      .createQueryBuilder('chat_sessions')
+    const listPatients = await this.userRepository
+      .createQueryBuilder('users')
       .select(
-        'u.id as id, u.nick_name, u.email, u.first_name, u.last_name, u.date_of_birth, u.avatar, u.telephone, avg(chat_sessions.evaluate) as avgRate, count(distinct `chat_sessions`.`id`) as countRate',
+        'users.id as id, users.nick_name, users.email, users.first_name, users.last_name, users.date_of_birth, users.avatar, users.telephone, avg(chat_sessions.evaluate) as avgRate, count(distinct `chat_sessions`.`id`) as countRate',
       )
-      .innerJoin(Message, 'm', 'chat_sessions.id = m.chatSessionId')
-      .innerJoin(User, 'u', 'm.userId = u.id')
-      .where("u.role = 'expert'")
+      .leftJoin(Message, 'm', 'users.id = m.userId')
+      .leftJoin(
+        ChatSession,
+        'chat_sessions',
+        'm.chatSessionId = chat_sessions.id',
+      )
+      .where("users.role = 'expert'")
       .groupBy('id')
-      .orderBy('u.create_at', 'DESC')
+      .orderBy('users.create_at', 'DESC')
       .getRawMany();
     if (typeof limit == 'undefined') {
       return {

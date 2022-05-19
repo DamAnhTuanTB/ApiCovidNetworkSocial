@@ -25,6 +25,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import {
+  Notification,
+  Notification as NotificationEntity,
+} from '../../typeorm/notification.entity';
+import {
   SuccessCreateCommentPost,
   SuccessCreatePost,
   SuccessDeletePost,
@@ -48,6 +52,7 @@ import { CreateLikeOrUnlikeCommentDto } from './dto/CreateLikeOrUnlikeComment.dt
 import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
 import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
 import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
+import { CreateNotificationDto } from '../notification/dto/CreateNotificationDto.dto';
 @Injectable()
 export class PostManagementService {
   constructor(
@@ -63,6 +68,8 @@ export class PostManagementService {
     private readonly savePostRepository: Repository<SavePostEntity>,
     @InjectRepository(LikeCommentEntity)
     private readonly likeCommentRepository: Repository<LikeCommentEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationRepository: Repository<NotificationEntity>,
   ) {}
 
   returnListPostByPagingResponse(
@@ -510,6 +517,8 @@ export class PostManagementService {
       user,
       post,
     });
+    //Tạo thông báo
+    this.createNotification('Admin đã bình luận', user, post);
     return {
       statusCode: HttpStatus.CREATED,
       message: SuccessCreateCommentPost,
@@ -534,6 +543,8 @@ export class PostManagementService {
         user,
         post,
       });
+      //Tạo thông báo
+      this.createNotification('Admin đã thích', user, post);
     } else if (rawLikePost && createLikeOrUnlikePostDto.isLike == false) {
       await this.likePostRepository.delete({ id: (await rawLikePost).id });
     }
@@ -562,6 +573,8 @@ export class PostManagementService {
         user,
         post,
       });
+      //Tạo thông báo
+      this.createNotification('Admin đã lưu', user, post);
     } else if (rawLikePost && createSaveOrUnsavePostDto.isSave == false) {
       await this.savePostRepository.delete({ id: (await rawLikePost).id });
     }
@@ -679,5 +692,21 @@ export class PostManagementService {
       statusCode: HttpStatus.OK,
       message: SuccessDeletePost,
     };
+  }
+  async createNotification(content_texts: string, sender: User, post: Post) {
+    const createNotification = new CreateNotificationDto();
+    createNotification.content_texts = content_texts;
+    const user = await this.userRepository
+      .createQueryBuilder('users')
+      .select('users.id as id')
+      .innerJoin(Post, 'posts', 'posts.userId = users.id')
+      .where('posts.id = ' + post.id)
+      .getRawOne();
+    await this.notificationRepository.save({
+      ...createNotification,
+      user,
+      sender,
+      post,
+    });
   }
 }

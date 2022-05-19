@@ -3,9 +3,9 @@ import { UserService } from 'src/modules/user/user.service';
 import { Post } from '../../typeorm/post.entity';
 import { User } from '../../typeorm/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostManagementController } from './postManagement.controller';
+import { NotificationController } from './notification.controller';
 import { Module } from '@nestjs/common';
-import { PostManagementService } from './postManagement.service';
+import { NotificationService } from './notification.service';
 import {
   CommentPost,
   LikeComment,
@@ -25,12 +25,12 @@ import {
       Notification,
     ]),
   ],
-  controllers: [PostManagementController],
+  controllers: [NotificationController],
   providers: [
     {
-      provide: 'PostManagement_SERVICE',
-      useClass: PostManagementService,
+      provide: 'Notification_SERVICE',
+      useClass: NotificationService,
     },
   ],
 })
-export class PostManagementModule {}
+export class NotificationModule {}

@@ -1,5 +1,5 @@
 import { CreatePostDto } from './dto/CreatePost.dto';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Inject } from '@nestjs/common';
 
 import { Post, Post as PostEntity } from '../../typeorm/post.entity';
 import { User as UserEntity } from '../../typeorm/user.entity';
@@ -19,6 +19,10 @@ import {
   SuccessCreateCommentPost,
   SuccessLikeOrUnlikePost,
 } from 'src/commons/constants/success-messages';
+import {
+  Notification,
+  Notification as NotificationEntity,
+} from '../../typeorm/notification.entity';
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { StatusPost, UpdateStatusPostDto } from './dto/UpdateStatusPost.dto';
 import {
@@ -42,6 +46,8 @@ import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
 import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
 import { CreateLikeOrUnlikeCommentDto } from './dto/CreateLikeOrUnlikeComment.dto';
 import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
+import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../notification/dto/CreateNotificationDto.dto';
 
 @Injectable()
 export class PostService {
@@ -58,6 +64,8 @@ export class PostService {
     private readonly savePostRepository: Repository<SavePostEntity>,
     @InjectRepository(LikeCommentEntity)
     private readonly likeCommentRepository: Repository<LikeCommentEntity>,
+    @InjectRepository(NotificationEntity)
+    private readonly notificationRepository: Repository<NotificationEntity>,
   ) {}
 
   async createPost(id: number, createPost: CreatePostDto) {
@@ -444,6 +452,23 @@ export class PostService {
     );
   }
 
+  async createNotification(content_texts: string, sender: User, post: Post) {
+    const createNotification = new CreateNotificationDto();
+    createNotification.content_texts = content_texts;
+    const user = await this.userRepository
+      .createQueryBuilder('users')
+      .select('users.id as id')
+      .innerJoin(Post, 'posts', 'posts.userId = users.id')
+      .where('posts.id = ' + post.id)
+      .getRawOne();
+    await this.notificationRepository.save({
+      ...createNotification,
+      user,
+      sender,
+      post,
+    });
+  }
+
   async createCommentPost(
     idLogin: number,
     createCommentPost: CreateCommentPostDto,
@@ -457,6 +482,8 @@ export class PostService {
       user,
       post,
     });
+    //Tạo thông báo
+    this.createNotification('Đã bình luận', user, post);
     return {
       statusCode: HttpStatus.CREATED,
       message: SuccessCreateCommentPost,
@@ -481,6 +508,8 @@ export class PostService {
         user,
         post,
       });
+      //Tạo thông báo
+      this.createNotification('Đã thích', user, post);
     } else if (rawLikePost && createLikeOrUnlikePostDto.isLike == false) {
       await this.likePostRepository.delete({ id: (await rawLikePost).id });
     }
@@ -509,6 +538,8 @@ export class PostService {
         user,
         post,
       });
+      //Tạo thông báo
+      this.createNotification('Đã lưu', user, post);
     } else if (rawLikePost && createSaveOrUnsavePostDto.isSave == false) {
       await this.savePostRepository.delete({ id: (await rawLikePost).id });
     }

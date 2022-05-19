@@ -9,6 +9,7 @@ import entities from 'src/typeorm';
 import { PostManagementModule } from '../post_management/postManagement.module';
 import { PatientManagementModule } from '../patient_management/patientManagement.module';
 import { ExpertManagementModule } from '../expert_management/expertManagement.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ExpertManagementModule } from '../expert_management/expertManagement.mo
     PostManagementModule,
     PatientManagementModule,
     ExpertManagementModule,
+    NotificationModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',

@@ -16,6 +16,7 @@ import {
   LikePost,
   SavePost,
   LikeComment,
+  Notification,
 } from 'src/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
@@ -29,6 +30,7 @@ import { jwtConstants } from './constants';
       LikePost,
       SavePost,
       LikeComment,
+      Notification,
     ]),
     UserModule,
     PassportModule,
