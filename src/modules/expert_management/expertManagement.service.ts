@@ -91,13 +91,7 @@ export class ExpertManagementService {
     const listPatients = await this.userRepository
       .createQueryBuilder('users')
       .select(
-        'users.id as id, users.nick_name, users.email, users.first_name, users.last_name, users.date_of_birth, users.avatar, users.telephone, avg(chat_sessions.evaluate) as avgRate, count(distinct `chat_sessions`.`id`) as countRate',
-      )
-      .leftJoin(Message, 'm', 'users.id = m.userId')
-      .leftJoin(
-        ChatSession,
-        'chat_sessions',
-        'm.chatSessionId = chat_sessions.id',
+        'users.id as id, users.nick_name, users.email, users.first_name, users.last_name, users.date_of_birth, users.avatar, users.telephone',
       )
       .where("users.role = 'expert'")
       .groupBy('id')
