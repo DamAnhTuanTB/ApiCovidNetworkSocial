@@ -9,6 +9,7 @@ import {
   UseGuards,
   Get,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
@@ -50,5 +51,13 @@ export class UserController {
     @Body() updatePassword: UpdatePasswordDto,
   ) {
     return this.userService.updatePassword(id, updatePassword);
+  }
+
+  @Put('update-active')
+  async updateActive(
+    @User('id') id: number,
+    @Query('isActive') isActive: number,
+  ) {
+    return this.userService.updateActive(id, isActive);
   }
 }

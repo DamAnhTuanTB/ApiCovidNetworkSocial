@@ -1,7 +1,9 @@
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import {
   SuccessRegister,
+  SuccessUpdateActiveUser,
   SuccessUpdatePassword,
+  SuccessUpdatePost,
   SuccessUpdateProfile,
 } from './../../commons/constants/success-messages';
 import { HttpStatus } from '@nestjs/common';
@@ -16,6 +18,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { comparePassword, encodePassword } from 'src/commons/helpers/bcrypt';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
+import { FailUpdateActiveStatusUser } from 'src/commons/constants/error-messages';
 @Injectable()
 export class UserService {
   constructor(
@@ -84,5 +87,20 @@ export class UserService {
     } else {
       throw new HttpException(OLD_PASSWORD_INCORRECT, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async updateActive(idLogin: number, isActive) {
+    const userUpdate = await this.userRepository.findOne({ id: idLogin });
+    if (!userUpdate) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: FailUpdateActiveStatusUser,
+      };
+    }
+    await this.userRepository.update({ id: idLogin }, { is_active: isActive });
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessUpdateActiveUser,
+    };
   }
 }
