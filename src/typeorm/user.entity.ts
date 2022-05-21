@@ -24,6 +24,7 @@ export class User {
     default: () => 'NOW()',
   })
   update_at: string;
+
   @Column({
     nullable: false,
     default: '',

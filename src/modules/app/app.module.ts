@@ -1,3 +1,4 @@
+import { ChatModule } from '../chat/chat.module';
 import { PostModule } from './../post/post.module';
 import { AuthModule } from './../auth/auth.module';
 import { Module } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { AdminModule } from '../admin/admin.module';
     ExpertManagementModule,
     NotificationModule,
     AdminModule,
+    ChatModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',

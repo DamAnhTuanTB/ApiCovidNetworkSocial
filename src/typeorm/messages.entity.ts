@@ -1,7 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { ChatSession } from './chat_sessions.entity';
-import { User } from './index';
 
+export enum UserRole {
+  ADMIN = 'admin',
+  EXPERT = 'expert',
+  PATIENT = 'patient',
+}
 @Entity('messages')
 export class Message {
   @PrimaryGeneratedColumn({
@@ -9,29 +13,18 @@ export class Message {
   })
   id: number;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  user: User;
-
-  @ManyToOne(() => ChatSession, { onDelete: 'CASCADE' })
-  chatSession: ChatSession;
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: null,
+  })
+  role: UserRole;
 
   @Column({
     type: 'datetime',
     default: () => 'NOW()',
   })
-  create_at: string;
-
-  @Column({
-    type: 'boolean',
-    default: true,
-  })
-  isSent: boolean;
-
-  @Column({
-    type: 'boolean',
-    default: false,
-  })
-  isSeen: boolean;
+  created_at: string;
 
   @Column({
     nullable: false,
@@ -41,9 +34,11 @@ export class Message {
   content_texts: string;
 
   @Column({
-    nullable: false,
-    default: '',
+    default: null,
     length: 1000,
   })
   content_images: string;
+
+  @ManyToOne(() => ChatSession, { onDelete: 'CASCADE' })
+  chat_session: ChatSession;
 }

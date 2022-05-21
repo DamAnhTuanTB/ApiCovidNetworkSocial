@@ -3,7 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+  });
   app.setGlobalPrefix('covid-network-social');
   const options = new DocumentBuilder()
     .setTitle('Api Covid Network Social Specification')
