@@ -1,5 +1,6 @@
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import {
+  SuccessGetListPaging,
   SuccessRegister,
   SuccessUpdateActiveUser,
   SuccessUpdatePassword,
@@ -19,6 +20,7 @@ import { Repository } from 'typeorm';
 import { comparePassword, encodePassword } from 'src/commons/helpers/bcrypt';
 import { UpdatePasswordDto } from './dto/UpdatePassword.dto';
 import { FailUpdateActiveStatusUser } from 'src/commons/constants/error-messages';
+import { CommentPost, Post } from 'src/typeorm';
 @Injectable()
 export class UserService {
   constructor(
@@ -101,6 +103,24 @@ export class UserService {
     return {
       statusCode: HttpStatus.OK,
       message: SuccessUpdateActiveUser,
+    };
+  }
+
+  async getImageByPatientId(idUser) {
+    const listPatients = await this.userRepository
+      .createQueryBuilder('users')
+      .select(
+        "Group_CONCAT(distinct posts.content_images separator ';') AS posts_images,  Group_CONCAT(distinct comment_posts.content_images separator ';') AS comment_images",
+      )
+      .leftJoin(Post, 'posts', 'users.id = posts.userId')
+      .leftJoin(CommentPost, 'comment_posts', 'users.id = comment_posts.userId')
+      .where('users.id = ' + idUser)
+      .getRawMany();
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessGetListPaging,
+      data: listPatients,
     };
   }
 }

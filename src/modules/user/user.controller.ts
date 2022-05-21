@@ -60,4 +60,16 @@ export class UserController {
   ) {
     return this.userService.updateActive(id, isActive);
   }
+
+  //Get list ảnh của mình
+  @Get('get-all-image-of-patient')
+  getImages(@User('id') id: number) {
+    return this.userService.getImageByPatientId(id);
+  }
+
+  //Get list ảnh của từng bệnh nhân khác
+  @Get('get-all-image-of-patient/:idUser')
+  getImageByPatientId(@Param('idUser') idUser: number) {
+    return this.userService.getImageByPatientId(idUser);
+  }
 }
