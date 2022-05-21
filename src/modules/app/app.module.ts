@@ -10,6 +10,7 @@ import { PostManagementModule } from '../post_management/postManagement.module';
 import { PatientManagementModule } from '../patient_management/patientManagement.module';
 import { ExpertManagementModule } from '../expert_management/expertManagement.module';
 import { NotificationModule } from '../notification/notification.module';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { NotificationModule } from '../notification/notification.module';
     PatientManagementModule,
     ExpertManagementModule,
     NotificationModule,
+    AdminModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
