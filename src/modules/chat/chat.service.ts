@@ -16,7 +16,7 @@ import { Message } from 'src/typeorm/messages.entity';
 import { User } from 'src/typeorm';
 import { SendMessageDto } from './dto/SendMessage';
 
-@WebSocketGateway({
+@WebSocketGateway(4444, {
   cors: {
     origin: '*',
   },
