@@ -5,6 +5,9 @@ export class CreateCommentPostDto {
   postId: number;
 
   @IsNotEmpty()
+  authorId: number;
+
+  @IsNotEmpty()
   content_texts: string;
 
   @IsOptional()

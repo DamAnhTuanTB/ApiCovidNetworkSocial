@@ -1,3 +1,4 @@
+import { UpdateStatusPostDto } from './../post/dto/UpdateStatusPost.dto';
 export enum StatusPost {
   SUCCESS = 'success',
   PENDING = 'pending',
@@ -53,6 +54,14 @@ import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
 import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
 import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
 import { CreateNotificationDto } from '../notification/dto/CreateNotificationDto.dto';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
+
+@WebSocketGateway(4444, {
+  cors: {
+    origin: '*',
+  },
+})
 @Injectable()
 export class PostManagementService {
   constructor(
@@ -71,6 +80,8 @@ export class PostManagementService {
     @InjectRepository(NotificationEntity)
     private readonly notificationRepository: Repository<NotificationEntity>,
   ) {}
+  @WebSocketServer()
+  server: Server;
 
   returnListPostByPagingResponse(
     listPost: Array<Post>,
@@ -388,7 +399,11 @@ export class PostManagementService {
     };
   }
 
-  async updateStatusPost(idPost: number, status: StatusPost, idLogin: number) {
+  async updateStatusPost(
+    idPost: number,
+    idLogin: number,
+    updateStatusPostDto: UpdateStatusPostDto,
+  ) {
     const postUpdate = await this.postRepository.findOne({ id: idPost });
     if (!postUpdate) {
       return {
@@ -396,15 +411,28 @@ export class PostManagementService {
         message: FailUpdatePost,
       };
     }
-    await this.postRepository.update({ id: idPost }, { status: status });
-    if (status == StatusPost.CANCEL) {
+    await this.postRepository.update(
+      { id: idPost },
+      { status: updateStatusPostDto.status },
+    );
+    if (updateStatusPostDto.status == StatusPost.CANCEL) {
       const user = await this.userRepository.findOne({ id: idLogin });
       //Tạo thông báo
       this.createNotification('đã hủy bài viết', user, postUpdate);
-    } else if (status == StatusPost.SUCCESS) {
+      this.server.emit('event_admin_cancel_post', {
+        userIdFrom: idLogin,
+        userIdTo: updateStatusPostDto.authorId,
+        postId: idPost,
+      });
+    } else if (updateStatusPostDto.status == StatusPost.SUCCESS) {
       const user = await this.userRepository.findOne({ id: idLogin });
       //Tạo thông báo
       this.createNotification('đã phê duyệt bài viết', user, postUpdate);
+      this.server.emit('event_admin_approve_post', {
+        userIdFrom: idLogin,
+        userIdTo: updateStatusPostDto.authorId,
+        postId: idPost,
+      });
     }
     return {
       statusCode: HttpStatus.OK,

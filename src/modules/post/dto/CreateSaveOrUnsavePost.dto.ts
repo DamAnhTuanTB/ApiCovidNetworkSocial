@@ -5,5 +5,8 @@ export class CreateSaveOrUnsavePostDto {
   postId: number;
 
   @IsNotEmpty()
+  authorId: number;
+
+  @IsNotEmpty()
   isSave: boolean;
 }

@@ -80,24 +80,19 @@ export class ChatService {
     const listMessages = await this.messageRepository
       .createQueryBuilder('messages')
       .leftJoinAndSelect('messages.chat_session', 'chat_sessions')
+      .where('messages.chatSessionId = :id', { id })
       .getMany();
-
-    return listMessages.filter(
-      (value) => Number(value?.chat_session?.id) === Number(id),
-    );
+    return listMessages;
   }
 
   async getListMessagesExpert(id: number) {
     const listMessages = await this.messageRepository
       .createQueryBuilder('messages')
       .leftJoinAndSelect('messages.chat_session', 'chat_sessions')
+      .where('messages.chatSessionId = :id', { id })
       .getMany();
-
     await this.chatSessionRepository.update({ id }, { is_new: 0 });
-
-    return listMessages.filter(
-      (value) => Number(value?.chat_session?.id) === Number(id),
-    );
+    return listMessages;
   }
 
   async getListChatSessionsOfExpert(id: number, query: QueryListDto) {
@@ -136,14 +131,14 @@ export class ChatService {
     const chat_session = await this.getDetailChatSessionPatient(
       message.chatSessionId,
     );
-    this.messageRepository.save({
+    await this.messageRepository.save({
       chat_session,
       content_texts: message.content,
       created_at: message.createdAt,
       role: UserRole.PATIENT,
     });
 
-    this.chatSessionRepository.update(
+    await this.chatSessionRepository.update(
       {
         id: message.chatSessionId,
       },
@@ -165,7 +160,7 @@ export class ChatService {
     const chat_session = await this.getDetailChatSessionExpert(
       message.chatSessionId,
     );
-    this.messageRepository.save({
+    await this.messageRepository.save({
       chat_session,
       content_texts: message.content,
       created_at: message.createdAt,

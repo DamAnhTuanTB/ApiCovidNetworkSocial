@@ -41,14 +41,20 @@ import {
   SavePost,
   User,
 } from 'src/typeorm';
-import { type } from 'os';
 import { CreateCommentPostDto } from './dto/CreateCommentPost.dto';
 import { CreateLikeOrUnlikePostDto } from './dto/CreateLikeOrUnlikePost.dto';
 import { CreateLikeOrUnlikeCommentDto } from './dto/CreateLikeOrUnlikeComment.dto';
 import { CreateSaveOrUnsavePostDto } from './dto/CreateSaveOrUnsavePost.dto';
 import { NotificationService } from '../notification/notification.service';
 import { CreateNotificationDto } from '../notification/dto/CreateNotificationDto.dto';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 
+@WebSocketGateway(4444, {
+  cors: {
+    origin: '*',
+  },
+})
 @Injectable()
 export class PostService {
   constructor(
@@ -67,6 +73,9 @@ export class PostService {
     @InjectRepository(NotificationEntity)
     private readonly notificationRepository: Repository<NotificationEntity>,
   ) {}
+
+  @WebSocketServer()
+  server: Server;
 
   async createPost(id: number, createPost: CreatePostDto) {
     const user = await this.userRepository.findOne({ id });
@@ -484,6 +493,13 @@ export class PostService {
     });
     //Tạo thông báo
     this.createNotification('đã bình luận', user, post);
+
+    this.server.emit('event_patient_comment_post', {
+      userIdFrom: idLogin,
+      userIdTo: createCommentPost.authorId,
+      postId: createCommentPost.postId,
+    });
+
     return {
       statusCode: HttpStatus.CREATED,
       message: SuccessCreateCommentPost,
@@ -510,6 +526,11 @@ export class PostService {
       });
       //Tạo thông báo
       this.createNotification('đã thích', user, post);
+      this.server.emit('event_patient_like_post', {
+        userIdFrom: idLogin,
+        userIdTo: createLikeOrUnlikePostDto.authorId,
+        postId: createLikeOrUnlikePostDto.postId,
+      });
     } else if (rawLikePost && createLikeOrUnlikePostDto.isLike == false) {
       await this.likePostRepository.delete({ id: (await rawLikePost).id });
     }
@@ -540,6 +561,11 @@ export class PostService {
       });
       //Tạo thông báo
       this.createNotification('đã lưu', user, post);
+      this.server.emit('event_patient_save_post', {
+        userIdFrom: idLogin,
+        userIdTo: createSaveOrUnsavePostDto.authorId,
+        postId: createSaveOrUnsavePostDto.postId,
+      });
     } else if (rawLikePost && createSaveOrUnsavePostDto.isSave == false) {
       await this.savePostRepository.delete({ id: (await rawLikePost).id });
     }

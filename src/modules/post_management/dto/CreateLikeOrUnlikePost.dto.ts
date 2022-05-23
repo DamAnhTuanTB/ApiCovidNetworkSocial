@@ -5,5 +5,8 @@ export class CreateLikeOrUnlikePostDto {
   postId: number;
 
   @IsNotEmpty()
+  authorId: number;
+
+  @IsNotEmpty()
   isLike: boolean;
 }

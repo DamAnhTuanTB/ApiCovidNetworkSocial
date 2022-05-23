@@ -1,3 +1,4 @@
+import { UpdateStatusPostDto } from './../post/dto/UpdateStatusPost.dto';
 import {
   Body,
   Controller,
@@ -106,9 +107,13 @@ export class PostManagementController {
   async updateStatusPost(
     @User('id') idLogin: number,
     @Param('idPost') idPost: number,
-    @Query('status') status: StatusPost,
+    @Body() updateStatusPostDto: UpdateStatusPostDto,
   ) {
-    return this.adminService.updateStatusPost(idPost, status, idLogin);
+    return this.adminService.updateStatusPost(
+      idPost,
+      idLogin,
+      updateStatusPostDto,
+    );
   }
 
   //Get chi tiết bài viết

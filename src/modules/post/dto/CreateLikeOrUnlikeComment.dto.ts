@@ -5,5 +5,8 @@ export class CreateLikeOrUnlikeCommentDto {
   commentId: number;
 
   @IsNotEmpty()
+  authorId: number;
+
+  @IsNotEmpty()
   isLike: boolean;
 }
