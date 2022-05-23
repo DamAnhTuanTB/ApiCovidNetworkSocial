@@ -419,7 +419,7 @@ export class PostManagementService {
       const user = await this.userRepository.findOne({ id: idLogin });
       //Tạo thông báo
       this.createNotification('đã hủy bài viết', user, postUpdate);
-      this.server.emit('event_admin_cancel_post', {
+      this.server.emit('notify_post', {
         userIdFrom: idLogin,
         userIdTo: updateStatusPostDto.authorId,
         postId: idPost,
@@ -428,7 +428,7 @@ export class PostManagementService {
       const user = await this.userRepository.findOne({ id: idLogin });
       //Tạo thông báo
       this.createNotification('đã phê duyệt bài viết', user, postUpdate);
-      this.server.emit('event_admin_approve_post', {
+      this.server.emit('notify_post', {
         userIdFrom: idLogin,
         userIdTo: updateStatusPostDto.authorId,
         postId: idPost,
