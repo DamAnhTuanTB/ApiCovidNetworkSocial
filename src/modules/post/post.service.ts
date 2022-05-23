@@ -494,7 +494,7 @@ export class PostService {
     //Tạo thông báo
     this.createNotification('đã bình luận', user, post);
 
-    this.server.emit('event_patient_comment_post', {
+    this.server.emit('notify_post', {
       userIdFrom: idLogin,
       userIdTo: createCommentPost.authorId,
       postId: createCommentPost.postId,
@@ -526,7 +526,7 @@ export class PostService {
       });
       //Tạo thông báo
       this.createNotification('đã thích', user, post);
-      this.server.emit('event_patient_like_post', {
+      this.server.emit('notify_post', {
         userIdFrom: idLogin,
         userIdTo: createLikeOrUnlikePostDto.authorId,
         postId: createLikeOrUnlikePostDto.postId,
@@ -561,7 +561,7 @@ export class PostService {
       });
       //Tạo thông báo
       this.createNotification('đã lưu', user, post);
-      this.server.emit('event_patient_save_post', {
+      this.server.emit('notify_post', {
         userIdFrom: idLogin,
         userIdTo: createSaveOrUnsavePostDto.authorId,
         postId: createSaveOrUnsavePostDto.postId,
