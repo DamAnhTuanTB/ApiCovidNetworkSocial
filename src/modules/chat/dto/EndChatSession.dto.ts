@@ -6,4 +6,7 @@ export class EndChatSessionDto {
 
   @IsNotEmpty()
   endTime: string;
+
+  @IsNotEmpty()
+  expectId: number;
 }

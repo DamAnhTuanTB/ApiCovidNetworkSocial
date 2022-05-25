@@ -96,11 +96,25 @@ export class ChatService {
   }
 
   async getListChatSessionsOfExpert(id: number, query: QueryListDto) {
+    const day = Number(query.date.substring(0, 2));
+    const month = Number(query.date.substring(3, 5));
+    const year = Number(query.date.substring(6, 10));
+
+    let condition = `chat_sessions.expertId = ${id} and chat_sessions.start_time != chat_sessions.updated_at`;
+    if (query.date !== 'undefined') {
+      condition += ` and DAY(chat_sessions.start_time) = ${day} and MONTH(chat_sessions.start_time) = ${month} and YEAR(chat_sessions.start_time) = ${year}`;
+    }
+    if (Number(query.status) === 1) {
+      condition += ` and chat_sessions.end_time IS NULL`;
+    } else if (Number(query.status) === 2) {
+      condition += ` and chat_sessions.end_time IS NOT NULL`;
+    }
+
     const listChatSessions = await this.chatSessionRepository
       .createQueryBuilder('chat_sessions')
       .leftJoinAndSelect('chat_sessions.patient', 'users')
-      .where('chat_sessions.expertId = :id', { id })
-      .andWhere('chat_sessions.start_time != chat_sessions.updated_at')
+      .where(condition)
+      // .andWhere('chat_sessions.start_time != chat_sessions.updated_at')
       .addOrderBy('chat_sessions.updated_at', 'DESC')
       .getMany();
 
@@ -128,6 +142,7 @@ export class ChatService {
   async handleEventPatientSendMessage(
     @MessageBody() message: SendMessageDto,
   ): Promise<any> {
+    console.log(message);
     const chat_session = await this.getDetailChatSessionPatient(
       message.chatSessionId,
     );
@@ -150,6 +165,7 @@ export class ChatService {
 
     this.server.emit('expert_receiver_message', {
       id: message.chatSessionId,
+      expectId: message.expertId,
     });
   }
 
@@ -202,6 +218,7 @@ export class ChatService {
     this.server.emit('receive_end_chat_session', {
       chatSessionId: data.chatSessionId,
       end_time: new Date().toISOString(),
+      expectId: data.expectId,
     });
   }
 }

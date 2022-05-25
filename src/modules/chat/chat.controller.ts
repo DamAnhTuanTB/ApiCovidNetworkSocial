@@ -41,9 +41,9 @@ export class ChatController {
     return this.chatService.getListMessagesExpert(id);
   }
 
-  @Get('get-list-chat-sessions-of-expert')
+  @Get('get-list-chat-sessions-of-expert/:id')
   getListChatSessionsOfExpert(
-    @User('id') id: number,
+    @Param('id') id: number,
     @Query() query: QueryListDto,
   ) {
     return this.chatService.getListChatSessionsOfExpert(id, query);

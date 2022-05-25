@@ -6,4 +6,10 @@ export class QueryListDto {
 
   @IsOptional()
   limit?: number;
+
+  @IsOptional()
+  date?: string;
+
+  @IsOptional()
+  status?: number;
 }
