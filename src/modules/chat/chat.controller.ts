@@ -41,6 +41,11 @@ export class ChatController {
     return this.chatService.getListMessagesExpert(id);
   }
 
+  @Get('admin/get-list-messages-expert/:id')
+  getListMessagesExpertAdmin(@Param('id') id: number) {
+    return this.chatService.getListMessagesExpertAdmin(id);
+  }
+
   @Get('get-list-chat-sessions-of-expert/:id')
   getListChatSessionsOfExpert(
     @Param('id') id: number,

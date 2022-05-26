@@ -1,3 +1,4 @@
+import { ExpertReadMessage } from './dto/ExpertReadMessage.dto';
 import { QueryListDto } from './dto/QueryList.dto';
 import { EndChatSessionDto } from './dto/EndChatSession.dto';
 import { EvaluateChatSessionDto } from './dto/EvaluateChatSession.dto';
@@ -95,6 +96,15 @@ export class ChatService {
     return listMessages;
   }
 
+  async getListMessagesExpertAdmin(id: number) {
+    const listMessages = await this.messageRepository
+      .createQueryBuilder('messages')
+      .leftJoinAndSelect('messages.chat_session', 'chat_sessions')
+      .where('messages.chatSessionId = :id', { id })
+      .getMany();
+    return listMessages;
+  }
+
   async getListChatSessionsOfExpert(id: number, query: QueryListDto) {
     const day = Number(query.date.substring(0, 2));
     const month = Number(query.date.substring(3, 5));
@@ -142,7 +152,6 @@ export class ChatService {
   async handleEventPatientSendMessage(
     @MessageBody() message: SendMessageDto,
   ): Promise<any> {
-    console.log(message);
     const chat_session = await this.getDetailChatSessionPatient(
       message.chatSessionId,
     );
@@ -165,7 +174,7 @@ export class ChatService {
 
     this.server.emit('expert_receiver_message', {
       id: message.chatSessionId,
-      expectId: message.expertId,
+      expertId: message.expertId,
     });
   }
 
@@ -215,10 +224,13 @@ export class ChatService {
         end_time: data.endTime,
       },
     );
-    this.server.emit('receive_end_chat_session', {
-      chatSessionId: data.chatSessionId,
-      end_time: new Date().toISOString(),
-      expectId: data.expectId,
-    });
+    this.server.emit('receive_end_chat_session', data);
+  }
+
+  @SubscribeMessage('expert_read_message')
+  async handleExpertReadMessage(
+    @MessageBody() data: ExpertReadMessage,
+  ): Promise<any> {
+    this.server.emit('admin_receiver_expert_read_message', data);
   }
 }

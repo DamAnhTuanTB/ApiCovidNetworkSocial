@@ -8,5 +8,5 @@ export class EndChatSessionDto {
   endTime: string;
 
   @IsNotEmpty()
-  expectId: number;
+  expertId: string;
 }
