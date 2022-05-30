@@ -34,8 +34,12 @@ export class ExpertManagementController {
   //Quản lý chuyên gia
   //Get danh sách bệnh nhân
   @Get('expert/get-all-experts')
-  getAllPatients(@Query('limit') limit?: number, @Query('page') page = 1) {
-    return this.adminService.getAllExperts(limit, page);
+  getAllPatients(
+    @Query('limit') limit?: number,
+    @Query('page') page = 1,
+    @Query('email') emailFilter = '',
+  ) {
+    return this.adminService.getAllExperts(limit, page, emailFilter);
   }
 
   //Admin tạo chuyên gia

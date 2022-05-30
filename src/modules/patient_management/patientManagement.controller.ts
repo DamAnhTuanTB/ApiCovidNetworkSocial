@@ -30,8 +30,12 @@ export class PatientManagementController {
   //Quản lý bệnh nhân
   //Get danh sách bệnh nhân
   @Get('patient/get-all-patients')
-  getAllPatients(@Query('limit') limit?: number, @Query('page') page = 1) {
-    return this.adminService.getAllPatients(limit, page);
+  getAllPatients(
+    @Query('limit') limit?: number,
+    @Query('page') page = 1,
+    @Query('email') emailFilter = '',
+  ) {
+    return this.adminService.getAllPatients(limit, page, emailFilter);
   }
 
   //Get list ảnh của từng bệnh nhân

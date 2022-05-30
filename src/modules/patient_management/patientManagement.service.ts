@@ -74,13 +74,13 @@ export class PatientManagementService {
     };
   }
 
-  async getAllPatients(limit, page) {
+  async getAllPatients(limit, page, email) {
     const listPatients = await this.userRepository
       .createQueryBuilder('users')
       .select(
         'id, nick_name, email, first_name, last_name, date_of_birth, avatar, telephone',
       )
-      .where("role = 'patient'")
+      .where("role = 'patient' and email like '%" + email + "%'")
       .orderBy('create_at', 'DESC')
       .getRawMany();
     if (typeof limit == 'undefined') {

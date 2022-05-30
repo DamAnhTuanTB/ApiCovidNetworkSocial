@@ -87,13 +87,13 @@ export class ExpertManagementService {
     };
   }
 
-  async getAllExperts(limit, page) {
+  async getAllExperts(limit, page, emailFilter) {
     const listPatients = await this.userRepository
       .createQueryBuilder('users')
       .select(
         'users.id as id, users.nick_name, users.email, users.first_name, users.last_name, users.date_of_birth, users.avatar, users.telephone',
       )
-      .where("users.role = 'expert'")
+      .where("users.role = 'expert' and email like '%" + emailFilter + "%'")
       .groupBy('id')
       .orderBy('users.create_at', 'DESC')
       .getRawMany();
