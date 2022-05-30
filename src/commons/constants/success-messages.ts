@@ -10,6 +10,8 @@ export const SuccessDeleteCommentPost =
   'Your comment has been successfully deleted.';
 export const SuccessDeleteExpert = 'Expert has been successfully deleted.';
 export const SuccessUpdatePost = 'You have successfully updated your post.';
+export const SuccessUpdateComment =
+  'You have successfully updated your comment.';
 export const SuccessUpdateActiveUser = 'You have successfully updated active.';
 export const SuccessGetListPaging = 'Get list successful.';
 export const SuccessGetPostDetails = 'Get post detail successful.';

@@ -21,6 +21,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/commons/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { PostService } from './post.service';
+import { UpdateCommentDto } from './dto/UpdateComment.dto';
 
 @ApiTags('Post')
 @UseGuards(JwtAuthGuard)
@@ -124,12 +125,22 @@ export class PostController {
   }
 
   //Patient xóa comment
-  @Post('delete-comment/:idComment')
+  @Delete('delete-comment/:idComment')
   deleteCommentPost(
     @User('id') idLogin: number,
     @Param('idComment') idComment: number,
   ) {
     return this.postService.deleteCommentPost(idLogin, idComment);
+  }
+
+  //Cập nhật bài viết của người dùng hiện tại
+  @Put('update-comment/:idComment')
+  async updateCommentPost(
+    @User('id') userId: number,
+    @Param('idComment') idComment: number,
+    @Body() updateComment: UpdateCommentDto,
+  ) {
+    return this.postService.updateComment(userId, idComment, updateComment);
   }
 
   //Like or unlike post

@@ -19,6 +19,7 @@ import {
   SuccessCreateCommentPost,
   SuccessLikeOrUnlikePost,
   SuccessDeleteCommentPost,
+  SuccessUpdateComment,
 } from 'src/commons/constants/success-messages';
 import {
   Notification,
@@ -34,6 +35,7 @@ import {
   FailGetPostDetailsBecauseOfNotSuccess,
   FailTypeLimitOrPage,
   FailTypePost,
+  FailUpdateComment,
   FailUpdatePost,
 } from 'src/commons/constants/error-messages';
 import {
@@ -51,6 +53,7 @@ import { NotificationService } from '../notification/notification.service';
 import { CreateNotificationDto } from '../notification/dto/CreateNotificationDto.dto';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { UpdateCommentDto } from './dto/UpdateComment.dto';
 
 @WebSocketGateway(4444, {
   cors: {
@@ -541,6 +544,28 @@ export class PostService {
     return {
       statusCode: HttpStatus.OK,
       message: SuccessDeleteCommentPost,
+    };
+  }
+
+  async updateComment(
+    userId: number,
+    idComment: number,
+    updateComment: UpdateCommentDto,
+  ) {
+    const commentUpdate = await this.findCommentByIdAndUserId(
+      userId,
+      idComment,
+    );
+    if (!commentUpdate) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: FailUpdateComment,
+      };
+    }
+    await this.commentPostRepository.update({ id: idComment }, updateComment);
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessUpdateComment,
     };
   }
 
