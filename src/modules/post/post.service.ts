@@ -18,6 +18,7 @@ import {
   SuccessUpdatePost,
   SuccessCreateCommentPost,
   SuccessLikeOrUnlikePost,
+  SuccessDeleteCommentPost,
 } from 'src/commons/constants/success-messages';
 import {
   Notification,
@@ -26,6 +27,7 @@ import {
 import { UpdatePostDto } from './dto/UpdatePost.dto';
 import { StatusPost, UpdateStatusPostDto } from './dto/UpdateStatusPost.dto';
 import {
+  FailDeleteCommentPost,
   FailDeletePost,
   FailGetComment,
   FailGetPostDetails,
@@ -503,6 +505,42 @@ export class PostService {
     return {
       statusCode: HttpStatus.CREATED,
       message: SuccessCreateCommentPost,
+    };
+  }
+
+  async findCommentByIdAndUserId(
+    idLogin: number,
+    idComment: number,
+  ): Promise<CommentPost | undefined> {
+    return await this.commentPostRepository
+      .createQueryBuilder('comment_posts')
+      .where(
+        'comment_posts.id = :idComment and comment_posts.userId = :userId',
+        {
+          idComment: idComment,
+          userId: idLogin,
+        },
+      )
+      .getOne();
+  }
+
+  async deleteCommentPost(idLogin: number, idComment: number) {
+    const commentDelete = await this.findCommentByIdAndUserId(
+      idLogin,
+      idComment,
+    );
+    if (!commentDelete) {
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: FailDeleteCommentPost,
+      };
+    }
+    await this.commentPostRepository.delete({
+      id: idComment,
+    });
+    return {
+      statusCode: HttpStatus.OK,
+      message: SuccessDeleteCommentPost,
     };
   }
 

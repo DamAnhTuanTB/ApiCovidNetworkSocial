@@ -4,6 +4,8 @@ export const FailUpdatePost = 'Post does not exist, post update failed.';
 export const FailUpdateActiveStatusUser =
   'User does not exist, user active status update failed.';
 export const FailDeletePost = 'Post does not exist, post deletion failed.';
+export const FailDeleteCommentPost =
+  'You do not have permission to delete this comment.';
 export const FailDeletePatient =
   'Patient does not exist, patient deletion failed.';
 export const FailDeleteExpert =

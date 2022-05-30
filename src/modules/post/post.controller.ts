@@ -123,6 +123,15 @@ export class PostController {
     return this.postService.createCommentPost(idLogin, createCommentPost);
   }
 
+  //Patient xóa comment
+  @Post('delete-comment/:idComment')
+  deleteCommentPost(
+    @User('id') idLogin: number,
+    @Param('idComment') idComment: number,
+  ) {
+    return this.postService.deleteCommentPost(idLogin, idComment);
+  }
+
   //Like or unlike post
   @Post('like-or-unlike-post')
   likeOrUnlikePost(
